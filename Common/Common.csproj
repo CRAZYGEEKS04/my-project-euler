@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2E2E8600-8FFB-4028-A026-F7D4E127026F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ProjectEuler.Common</RootNamespace>
+    <AssemblyName>Common</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BinarySearch.cs" />
+    <Compile Include="BitVector.cs" />
+    <Compile Include="GLPK\LinealProgramming.cs" />
+    <Compile Include="Graph\DisjointSet.cs" />
+    <Compile Include="Graph\DisjointSetNode.cs" />
+    <Compile Include="Miscellany\BouncyNumber.cs" />
+    <Compile Include="Miscellany\ContinuedFraction.cs" />
+    <Compile Include="ExactCover\DancingLinks.cs" />
+    <Compile Include="Miscellany\FareySequence.cs" />
+    <Compile Include="Miscellany\SmallContinuedFraction.cs" />
+    <Compile Include="Partition\DivideBlock.cs" />
+    <Compile Include="Miscellany\EnglishNumber.cs" />
+    <Compile Include="Miscellany\EulerPhi.cs" />
+    <Compile Include="ExactCover\ExactCover.cs" />
+    <Compile Include="Factor.cs" />
+    <Compile Include="Miscellany\Fibonacci.cs" />
+    <Compile Include="Fraction.cs" />
+    <Compile Include="Graph\Graph.cs" />
+    <Compile Include="Graph\GraphHelper.cs" />
+    <Compile Include="Itertools.cs" />
+    <Compile Include="LinearEquation.cs" />
+    <Compile Include="Matrix.cs" />
+    <Compile Include="Misc.cs" />
+    <Compile Include="Miscellany\OptimumSpecialSumSet.cs" />
+    <Compile Include="Partition\Partition.cs" />
+    <Compile Include="PellEquation.cs" />
+    <Compile Include="Miscellany\PolynomialFunction.cs" />
+    <Compile Include="Prime.cs" />
+    <Compile Include="Graph\PriorityQueue.cs" />
+    <Compile Include="Probability.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Miscellany\PythagoreanTriple.cs" />
+    <Compile Include="Miscellany\RepUnit.cs" />
+    <Compile Include="Miscellany\RomanNumerals.cs" />
+    <Compile Include="Partition\SeparateBlock.cs" />
+    <Compile Include="SmallFraction.cs" />
+    <Compile Include="Miscellany\SquareRoot.cs" />
+    <Compile Include="Miscellany\SudokuSolver.cs" />
+    <Compile Include="ThreeDimension.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GLPK\glpsol.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

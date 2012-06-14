@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{832A4AB7-12BA-4846-B007-5C4401E3BCC6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ProjectEuler.Solution</RootNamespace>
+    <AssemblyName>Solution</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="0\0.cs" />
+    <Compile Include="0\10.cs" />
+    <Compile Include="0\20.cs" />
+    <Compile Include="0\30.cs" />
+    <Compile Include="0\40.cs" />
+    <Compile Include="0\50.cs" />
+    <Compile Include="0\60.cs" />
+    <Compile Include="0\70.cs" />
+    <Compile Include="0\80.cs" />
+    <Compile Include="0\90.cs" />
+    <Compile Include="1\0.cs" />
+    <Compile Include="1\10.cs" />
+    <Compile Include="1\20.cs" />
+    <Compile Include="1\30.cs" />
+    <Compile Include="1\40.cs" />
+    <Compile Include="1\50.cs" />
+    <Compile Include="1\60.cs" />
+    <Compile Include="1\70.cs" />
+    <Compile Include="1\80.cs" />
+    <Compile Include="1\90.cs" />
+    <Compile Include="2\0.cs" />
+    <Compile Include="Problem.cs" />
+    <Compile Include="ProblemSet.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Answers.txt" />
+    <None Include="Resources\D0089.txt" />
+    <None Include="Resources\D0083.txt" />
+    <None Include="Resources\D0082.txt" />
+    <None Include="Resources\D0081.txt" />
+    <None Include="Resources\D0079.txt" />
+    <None Include="Resources\D0067.txt" />
+    <None Include="Resources\D0059.txt" />
+    <None Include="Resources\D0054.txt" />
+    <None Include="Resources\D0042.txt" />
+    <None Include="Resources\D0022.txt" />
+    <None Include="Resources\D0018.txt" />
+    <None Include="Resources\D0013.txt" />
+    <None Include="Resources\D0011.txt" />
+    <None Include="Resources\D0008.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\D0096.txt" />
+    <None Include="Resources\D0098.txt" />
+    <None Include="Resources\D0099.txt" />
+    <None Include="Resources\D0102.txt" />
+    <None Include="Resources\D0105.txt" />
+    <None Include="Resources\D0107.txt" />
+    <None Include="Resources\Questions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{2E2E8600-8FFB-4028-A026-F7D4E127026F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
