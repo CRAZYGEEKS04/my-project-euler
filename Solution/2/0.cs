@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using ProjectEuler.Common;
+using ProjectEuler.Common.Miscellany;
 
 namespace ProjectEuler.Solution
 {
@@ -594,6 +595,110 @@ namespace ProjectEuler.Solution
             var dict = new Dictionary<string, long>();
 
             return Count(dict, new int[] { length / 5, length / 5, length / 5, length / 5, length / 5 }).ToString();
+        }
+    }
+
+    /// <summary>
+    /// A k-input binary truth table is a map from k input bits (binary digits, 0
+    /// [false] or 1 [true]) to 1 output bit. For example, the 2-input binary truth
+    /// tables for the logical AND and XOR functions are:
+    ///
+    /// x	y	x AND y
+    /// 0	0		0
+    /// 0	1		0
+    /// 1	0		0
+    /// 1	1		1
+    ///
+    /// x	y	x XOR y
+    /// 0	0		0
+    /// 0	1		1
+    /// 1	0		1
+    /// 1	1		0
+    ///
+    /// How many 6-input binary truth tables, τ, satisfy the formula
+    /// τ(a, b, c, d, e, f) AND τ(b, c, d, e, f, a XOR (b AND c)) = 0
+    ///
+    /// for all 6-bit inputs (a, b, c, d, e, f)?
+    /// </summary>
+    internal class Problem209 : Problem
+    {
+        public Problem209() : base(209) { }
+
+        private Dictionary<int, int> GetLength(int[] x, int[] y)
+        {
+            var hash = new HashSet<int>();
+            var dict = new Dictionary<int, int>();
+
+            while (hash.Count < 64)
+            {
+                int start = Itertools.Range(0, 63).First(it => !hash.Contains(it));
+                int i = start, len = 1;
+
+                hash.Add(i);
+                while (y[i] != x[start])
+                {
+                    i = y[i];
+                    hash.Add(i);
+                    len++;
+                }
+
+                if (dict.ContainsKey(len))
+                    dict[len]++;
+                else
+                    dict[len] = 1;
+            }
+
+            return dict;
+        }
+
+        protected override string Action()
+        {
+            int[] x = Itertools.Range(0, 63).ToArray();
+            int[] y = new int[64];
+            Dictionary<int, int> dict;
+            long counter = 1;
+
+            for (int i = 0; i < 64; i++)
+            {
+                bool a = (x[i] & 0x20) != 0, b = (x[i] & 0x10) != 0, c = (x[i] & 0x08) != 0;
+
+                y[i] = (x[i] << 1) & 0x3F;
+                if (a != (b && c))
+                    y[i] |= 1;
+            }
+
+            /**
+             * x = τ(a, b, c, d, e, f), y = τ(b, c, d, e, f, a XOR (b AND c))
+             * x, y contains 0~63 uniquely
+             *
+             *      x      y
+             * 000000 000000
+             * ......
+             *
+             * x1 and y1 = 0
+             * x2 and y2 = 0
+             * ...
+             * x64 and y64 = 0
+             *
+             * Concatenate different clauses n and m where yn = xm => xnxmym => xnxmxpyp until yp = xn
+             * every concatenated string must not contains consecutive 1's
+             */
+            dict = GetLength(x, y);
+
+            /**
+             * any string of length N, k(N) = 0k(N-1) + 1(0)k(N-2)
+             * K(1) = 1, K(2) = 3
+             */
+            var list = new List<long> { 1, 3 };
+            for (int i = 2; i < 64; i++)
+                list.Add(list[list.Count - 2] + list[list.Count - 1]);
+            foreach (var cycle in dict)
+            {
+                for (int i = 0; i < cycle.Value; i++)
+                    counter *= list[cycle.Key - 1];
+            }
+
+            return counter.ToString();
         }
     }
 }
