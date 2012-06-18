@@ -687,15 +687,31 @@ namespace ProjectEuler.Solution
 
             /**
              * any string of length N, k(N) = 0k(N-1) + 1(0)k(N-2)
-             * K(1) = 1, K(2) = 3
+             * K(0) = 1, K(1) = 2, K(2) = 3
              */
-            var list = new List<long> { 1, 3 };
+            var list = new List<long> { 1, 2, 3 };
             for (int i = 2; i < 64; i++)
                 list.Add(list[list.Count - 2] + list[list.Count - 1]);
             foreach (var cycle in dict)
             {
+                long multiple;
+
+                switch (cycle.Key)
+                {
+                    case 1:
+                        multiple = 1;
+                        break;
+                    case 2:
+                        multiple = 3;
+                        break;
+                    default:
+                        // first and last can't be both 1, 10***0 or 0****
+                        multiple = list[cycle.Key - 1] + list[cycle.Key - 3];
+                        break;
+                }
+
                 for (int i = 0; i < cycle.Value; i++)
-                    counter *= list[cycle.Key - 1];
+                    counter *= multiple;
             }
 
             return counter.ToString();
