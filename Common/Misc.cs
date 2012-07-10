@@ -62,7 +62,14 @@ namespace ProjectEuler.Common
 
         public static long Sqrt(long number)
         {
-            return (long)(Math.Sqrt(number) + 0.1);
+            var ret = (long)Math.Sqrt(number);
+
+            while ((ret + 1) * (ret + 1) <= number)
+                ret++;
+            while (ret * ret > number)
+                ret--;
+
+            return ret;
         }
 
         public static BigInteger Sqrt(BigInteger number)

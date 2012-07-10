@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using ProjectEuler.Common;
+using ProjectEuler.Common.Miscellany;
 
 namespace ProjectEuler.Solution
 {
@@ -17,8 +19,7 @@ namespace ProjectEuler.Solution
     /// </summary>
     internal class Problem210 : Problem
     {
-        // 12-226, 100-15944, 10000-159814790
-        private const long radius = 4;
+        private const long radius = 1000000000;
 
         public Problem210() : base(210) { }
 
@@ -31,49 +32,28 @@ namespace ProjectEuler.Solution
              * OB^2 = x^2 + y^2, OC^2 = r^2/8, BC^2 = x^2 + y^2 + r^2/8 - (x+y)r/2
              *
              * case 1: OB^2 > OC^2 + BC^2
-             *   0 > r^2/4 - (x+y)r/2
-             *   x+y > r/2
+             *   0 > r^2/4 - (x+y)r/2 => x+y > r/2
+             *   All points in right side of x+y=r/2
              *
              * case 2: BC^2 > OB^2 + OC^2
-             *   -(x+y)r/2 > 0 =>
-             *   0 > x+y
+             *   -(x+y)r/2 > 0 => 0 > x+y
+             *   All points in left side of x+y = 0
              *
              * case 3: OC^2 > OB^2 + BC^2
-             *   0 > 2x^2 - xr/2 + 2y^2 - yr/2 =>
-             *   0 > x^2 + y^2 - (x+y)r/4
+             *   0 > 2x^2 - xr/2 + 2y^2 - yr/2 => (x+y)r/4 > x^2 + y^2
+             *   All points inside the circle at (r/8, r/8), radius r/8*sqrt(2)
              */
 
-            for (long x = -radius; x <= radius; x++)
-            {
-                long bound = radius - (x > 0 ? x : -x);
-                long lower = -x, upper = radius / 2 - x;
-
-                if (lower < -bound)
-                    lower = -bound;
-                if (upper > bound)
-                    upper = bound;
-
-                if (lower <= upper)
-                {
-                    counter += lower + bound;
-                    counter += bound - upper;
-                    if (lower > x || upper < x)
-                        counter--;
-                    for (long y = lower; y <= upper; y++)
-                    {
-                        if (x == y)
-                            continue;
-                        if (x * x + y * y - (x + y) * radius / 4 < 0)
-                            counter++;
-                    }
-                }
-                else
-                {
-                    counter += bound * 2 + 1;
-                    if (x <= radius / 2 && x >= -radius / 2)
-                        counter--;
-                }
-            }
+            if (radius % 8 != 0)
+                throw new ArgumentException("Can's use gaussian circle formula");
+            // case 1, minus points where x = y
+            counter += (radius + 1 + radius) * radius / 4;
+            // case 2, minus points where x = y
+            counter += (radius + 1 + radius) * radius / 2;
+            // case 3, minus points where x = y, must not on the circle
+            counter += GaussianCircle.Count(radius * radius / 32 - 1);
+            // remove points at (n, n), (0, 0) and (r/4, r/4) is already excluded
+            counter -= radius - 1;
 
             return counter.ToString();
         }
