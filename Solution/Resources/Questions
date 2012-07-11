@@ -2574,3 +2574,9 @@ Let N(r) be the number of points B in S(r), so that the triangle OBC has an obtu
 So, for example, N(4) = 24 and N(8) = 100.
 What is N(1,000,000,000)?
 ==========
+For a positive integer n, let σ2(n) be the sum of the squares of its divisors. For example,
+
+σ2(10) = 1 + 4 + 25 + 100 = 130.
+
+Find the sum of all n, 0 < n < 64,000,000 such that σ2(n) is a perfect square.
+==========

@@ -58,4 +58,41 @@ namespace ProjectEuler.Solution
             return counter.ToString();
         }
     }
+
+    /// <summary>
+    /// For a positive integer n, let σ2(n) be the sum of the squares of its divisors.
+    /// For example,
+    ///
+    /// σ2(10) = 1 + 4 + 25 + 100 = 130.
+    ///
+    /// Find the sum of all n, 0 < n < 64,000,000 such that σ2(n) is a perfect square.
+    /// </summary>
+    internal class Problem211 : Problem
+    {
+        private const int upper = 64000000;
+
+        public Problem211() : base(211) { }
+
+        protected override string Action()
+        {
+            var sigma2 = new long[upper];
+            long sum = 0;
+
+            for (int i = 1; i < upper; i++)
+            {
+                var s = (long)i * i;
+
+                for (int k = i; k < upper; k += i)
+                    sigma2[k] += s;
+            }
+
+            for (int i = 1; i < upper; i++)
+            {
+                if (Misc.IsPerfectSquare(sigma2[i]))
+                    sum += i;
+            }
+
+            return sum.ToString();
+        }
+    }
 }
