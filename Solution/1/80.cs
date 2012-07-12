@@ -6,6 +6,7 @@ using System.Text;
 using ProjectEuler.Common;
 using ProjectEuler.Common.GLPK;
 using ProjectEuler.Common.Graph;
+using ProjectEuler.Common.Miscellany;
 using ProjectEuler.Common.Partition;
 
 namespace ProjectEuler.Solution
@@ -457,6 +458,7 @@ namespace ProjectEuler.Solution
             "8157356344118483", "2615250744386899", "8690095851526254", "6375711915077050", "6913859173121360",
             "6442889055042768", "2321386104303845", "2326509471271448", "5251583379644322", "1748270476758276",
             "4895722652190306", "3041631117224635", "1841236454324589", "2659862637316867", };
+
         private int[] corrects = new int[] { 2, 1, 3, 3, 3, 1, 2, 3, 1, 2, 3, 1, 1, 2, 0, 2, 2, 3, 1, 3, 3, 2 };
 
         public Problem185() : base(185) { }
@@ -560,44 +562,26 @@ namespace ProjectEuler.Solution
     /// </summary>
     internal class Problem186 : Problem
     {
-        private const int upper = 1000000;
+        private const int modulo = 1000000;
         private const int pm = 524287;
 
         public Problem186() : base(186) { }
-
-        private IEnumerable<int> GetLaggedFibonacci()
-        {
-            var cq = new int[55];
-            int id = 54;
-
-            for (int i = 1; i <= 55; i++)
-            {
-                cq[i - 1] = (int)((100003 - 200003 * i + (long)300007 * i * i * i) % upper);
-                yield return cq[i - 1];
-            }
-            while (true)
-            {
-                id = (id + 1) % 55;
-                cq[id] = ((id >= 24 ? cq[id - 24] : cq[id + 31]) + cq[id]) % upper;
-                yield return cq[id];
-            }
-        }
 
         private bool Befriend(DistjointSetNode[] array, int caller, int callee)
         {
             DisjointSet.Union(array[caller], array[callee]);
 
-            return DisjointSet.FindSet(array[pm]).Size >= upper * 99 / 100;
+            return DisjointSet.FindSet(array[pm]).Size >= modulo * 99 / 100;
         }
 
         protected override string Action()
         {
-            var array = new DistjointSetNode[upper];
+            var array = new DistjointSetNode[modulo];
             int caller = 0, counter = 0;
 
-            for (int i = 0; i < upper; i++)
+            for (int i = 0; i < modulo; i++)
                 array[i] = DisjointSet.MakeSet();
-            foreach (var i in GetLaggedFibonacci())
+            foreach (var i in LaggedFibonacci.Generate())
             {
                 if (counter % 2 == 0)
                     caller = i;
