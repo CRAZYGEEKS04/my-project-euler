@@ -212,4 +212,95 @@ namespace ProjectEuler.Solution
             return volume.ToString();
         }
     }
+
+    /// <summary>
+    /// A 30*30 grid of squares contains 900 fleas, initially one flea per square.
+    /// When a bell is rung, each flea jumps to an adjacent square at random (usually 4
+    /// possibilities, except for fleas on the edge of the grid or at the corners).
+    ///
+    /// What is the expected number of unoccupied squares after 50 rings of the bell?
+    /// Give your answer rounded to six decimal places.
+    /// </summary>
+    internal class Problem213 : Problem
+    {
+        private const int size = 30;
+        private const int times = 50;
+
+        public Problem213() : base(213) { }
+
+        private double[,] RingTheBell(double[,] array)
+        {
+            var ret = new double[size, size];
+
+            // Four corners
+            ret[0, 1] += array[0, 0] / 2;
+            ret[1, 0] += array[0, 0] / 2;
+            ret[size - 2, 0] += array[size - 1, 0] / 2;
+            ret[size - 1, 1] += array[size - 1, 0] / 2;
+            ret[0, size - 2] += array[0, size - 1] / 2;
+            ret[1, size - 1] += array[0, size - 1] / 2;
+            ret[size - 2, size - 1] += array[size - 1, size - 1] / 2;
+            ret[size - 1, size - 2] += array[size - 1, size - 1] / 2;
+            // Four sides
+            for (int i = 1; i < size - 1; i++)
+            {
+                ret[0, i - 1] += array[0, i] / 3;
+                ret[1, i] += array[0, i] / 3;
+                ret[0, i + 1] += array[0, i] / 3;
+                ret[size - 1, i - 1] += array[size - 1, i] / 3;
+                ret[size - 2, i] += array[size - 1, i] / 3;
+                ret[size - 1, i + 1] += array[size - 1, i] / 3;
+                ret[i - 1, 0] += array[i, 0] / 3;
+                ret[i, 1] += array[i, 0] / 3;
+                ret[i + 1, 0] += array[i, 0] / 3;
+                ret[i - 1, size - 1] += array[i, size - 1] / 3;
+                ret[i, size - 2] += array[i, size - 1] / 3;
+                ret[i + 1, size - 1] += array[i, size - 1] / 3;
+            }
+            // Inner points
+            for (int x = 1; x < size - 1; x++)
+                for (int y = 1; y < size - 1; y++)
+                {
+                    ret[x - 1, y] += array[x, y] / 4;
+                    ret[x + 1, y] += array[x, y] / 4;
+                    ret[x, y - 1] += array[x, y] / 4;
+                    ret[x, y + 1] += array[x, y] / 4;
+                }
+
+            return ret;
+        }
+
+        protected override string Action()
+        {
+            var array = new List<List<double[,]>>();
+            double sum = 0;
+
+            for (int x = 0; x < size; x++)
+            {
+                array.Add(new List<double[,]>());
+                for (int y = 0; y < size; y++)
+                {
+                    array[x].Add(new double[size, size]);
+                    array[x][y][x, y] = 1;
+                    for (int t = 0; t < times; t++)
+                        array[x][y] = RingTheBell(array[x][y]);
+                }
+            }
+            for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    double e = 1;
+
+                    // calculate the possibility of none flea in the point
+                    for (int i = 0; i < size * size; i++)
+                        e *= (1 - array[i / size][i % size][x, y]);
+
+                    sum += e;
+                }
+            }
+
+            return sum.ToString("F6");
+        }
+    }
 }
