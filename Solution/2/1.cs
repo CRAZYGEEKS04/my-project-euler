@@ -364,4 +364,104 @@ namespace ProjectEuler.Solution
             return sum.ToString();
         }
     }
+
+    /// <summary>
+    /// Consider the problem of building a wall out of 2x1 and 3x1 bricks (horizontal
+    /// x vertical dimensions) such that, for extra strength, the gaps between
+    /// horizontally-adjacent bricks never line up in consecutive layers, i.e. never
+    /// form a "running crack".
+    ///
+    /// For example, the following 9x3 wall is not acceptable due to the running crack
+    /// shown in red:
+    ///
+    /// There are eight ways of forming a crack-free 9x3 wall, written W(9, 3) = 8.
+    ///
+    /// Calculate W(32, 10).
+    /// </summary>
+    internal class Problem215 : Problem
+    {
+        private const int length = 32;
+        private const int height = 10;
+
+        public Problem215() : base(215) { }
+
+        private void GeneratePattern(List<string> list, List<int> elements, int left)
+        {
+            if (left == 0)
+                list.Add(string.Join("", elements));
+            if (left < 2)
+                return;
+
+            elements.Add(2);
+            GeneratePattern(list, elements, left - 2);
+            if (left > 2)
+            {
+                elements[elements.Count - 1] = 3;
+                GeneratePattern(list, elements, left - 3);
+            }
+
+            elements.RemoveAt(elements.Count - 1);
+        }
+
+        private bool Check(string left, string right)
+        {
+            int p1 = 0, p2 = 0, l1 = left[0] - '0', l2 = right[0] - '0';
+
+            while (l1 != l2)
+            {
+                if (l1 > l2)
+                    l2 += right[++p2] - '0';
+                else
+                    l1 += left[++p1] - '0';
+            }
+
+            return l1 == length;
+        }
+
+        private long[] GetNextCounter(HashSet<int>[] next, long[] counter)
+        {
+            var ret = new long[counter.Length];
+
+            for (int i = 0; i < next.Length; i++)
+            {
+                foreach (var j in next[i])
+                    ret[i] += counter[j];
+            }
+
+            return ret;
+        }
+
+        protected override string Action()
+        {
+            var pattern = new List<string>();
+            long sum = 0;
+
+            GeneratePattern(pattern, new List<int>(), length);
+
+            var next = new HashSet<int>[pattern.Count];
+            var counter = new long[pattern.Count];
+
+            for (int i = 0; i < pattern.Count; i++)
+                next[i] = new HashSet<int>();
+            for (int i = 0; i < pattern.Count; i++)
+            {
+                counter[i] = 1;
+                for (int j = i + 1; j < pattern.Count; j++)
+                {
+                    if (Check(pattern[i], pattern[j]))
+                    {
+                        next[i].Add(j);
+                        next[j].Add(i);
+                    }
+                }
+            }
+
+            for (int i = 1; i < height; i++)
+                counter = GetNextCounter(next, counter);
+            foreach (var c in counter)
+                sum += c;
+
+            return sum.ToString();
+        }
+    }
 }
