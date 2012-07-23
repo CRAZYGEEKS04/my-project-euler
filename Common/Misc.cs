@@ -19,6 +19,25 @@ namespace ProjectEuler.Common
             return (x % m + m) % m;
         }
 
+        public static long ModPow(long v, long e, long m)
+        {
+            long ret = 1;
+
+            while (e != 0)
+            {
+                if ((e & 1) != 0)
+                {
+                    ret *= v;
+                    ret %= m;
+                }
+                v *= v;
+                v %= m;
+                e >>= 1;
+            }
+
+            return ret;
+        }
+
         public static bool IsPalindromic(string number)
         {
             for (int i = 0; i < number.Length / 2; i++)

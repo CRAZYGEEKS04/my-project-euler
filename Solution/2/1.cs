@@ -464,4 +464,101 @@ namespace ProjectEuler.Solution
             return sum.ToString();
         }
     }
+
+    /// <summary>
+    /// Consider numbers t(n) of the form t(n) = 2n^2-1 with n > 1.
+    /// The first such numbers are 7, 17, 31, 49, 71, 97, 127 and 161.
+    /// It turns out that only 49 = 7*7 and 161 = 7*23 are not prime.
+    /// For n <= 10000 there are 2202 numbers t(n) that are prime.
+    ///
+    /// How many numbers t(n) are prime for n <= 50,000,000 ?
+    /// </summary>
+    internal class Problem216 : Problem
+    {
+        private const long upper = 50000000;
+
+        public Problem216() : base(216) { }
+
+        private long TonelliShanks(long n, int p)
+        {
+            // http://en.wikipedia.org/wiki/Shanks-Tonelli_algorithm
+            long s, q, z, t, c;
+
+            // Step 1:
+            if (p % 4 == 3)
+                return Misc.ModPow(n, (p + 1) / 4, p);
+            s = 0;
+            q = p - 1;
+            while ((q & 1) == 0)
+            {
+                s++;
+                q /= 2;
+            }
+
+            // Step 2:
+            z = 2;
+            while ((t = Misc.ModPow(z, (p - 1) / 2, p)) == 1)
+                z++;
+            c = Misc.ModPow(z, q, p);
+
+            // Step 3:
+            long r = Misc.ModPow(n, (q + 1) / 2, p);
+
+            // Step 4:
+            while (true)
+            {
+                long u = (2 * r * r) % p, i = 0;
+
+                while (u != 1)
+                {
+                    i++;
+                    u *= u;
+                    u %= p;
+                }
+                if (i == 0)
+                    return r;
+                u = c;
+                while (i < s - 1)
+                {
+                    ++i;
+                    u *= u;
+                    u %= p;
+                }
+                r *= u;
+                r %= p;
+            }
+        }
+
+        protected override string Action()
+        {
+            /**
+             * For an odd prime p: 2*n^2-1 = 0 mod p, 2*n^2 = 1 mod p
+             * n^2 = (p+1)/2 mod p
+             *
+             */
+            var prime = new Prime((int)Misc.Sqrt(2 * upper * upper));
+            var flags = new bool[upper + 1];
+
+            prime.GenerateAll();
+            foreach (var p in prime.Nums.Skip(1))
+            {
+                // Only prime of form 8n+-1 is valid
+                if (p % 8 != 1 && p % 8 != 7)
+                    continue;
+
+                int n = (int)TonelliShanks((p + 1) / 2, p);
+
+                if (n > upper)
+                    continue;
+                for (long i = n; i <= upper; i += p)
+                    if (2 * i * i - 1 > p)
+                        flags[i] = true;
+                for (long i = p - n; i <= upper; i += p)
+                    if (2 * i * i - 1 > p)
+                        flags[i] = true;
+            }
+
+            return flags.Skip(2).Count(it => !it).ToString();
+        }
+    }
 }
