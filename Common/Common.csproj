@@ -54,6 +54,7 @@
     <Compile Include="Miscellany\GaussianCircle.cs" />
     <Compile Include="Miscellany\LaggedFibonacci.cs" />
     <Compile Include="Miscellany\SmallContinuedFraction.cs" />
+    <Compile Include="Modulo.cs" />
     <Compile Include="Partition\DivideBlock.cs" />
     <Compile Include="Miscellany\EnglishNumber.cs" />
     <Compile Include="Miscellany\EulerPhi.cs" />

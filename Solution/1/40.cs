@@ -861,10 +861,12 @@ namespace ProjectEuler.Solution
 
         private void Generate(int[] array)
         {
+            Modulo modulo = new Modulo(1000000);
+
             for (int i = 0; i < 55; i++)
-                array[i] = (int)Misc.Modulo(100003 - 200003 * (i + 1) + (long)300007 * (i + 1) * (i + 1) * (i + 1), 1000000) - 500000;
+                array[i] = (int)modulo.Mod(100003 - 200003 * (i + 1) + (long)300007 * (i + 1) * (i + 1) * (i + 1)) - 500000;
             for (int i = 55; i < size * size; i++)
-                array[i] = Misc.Modulo(array[i - 24] + array[i - 55] + 1000000, 1000000) - 500000;
+                array[i] = (int)modulo.Mod(array[i - 24] + array[i - 55] + 1000000) - 500000;
         }
 
         protected override string Action()

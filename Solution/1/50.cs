@@ -61,6 +61,7 @@ namespace ProjectEuler.Solution
 
         private void Generate(int[][] array)
         {
+            Modulo modulo = new Modulo(0x100000);
             long t = 0;
 
             for (int i = 0; i < rows; i++)
@@ -68,7 +69,7 @@ namespace ProjectEuler.Solution
                 array[i] = new int[i + 1];
                 for (int j = 0; j <= i; j++)
                 {
-                    t = Misc.Modulo(615949 * t + 797807, 0x100000);
+                    t = modulo.Mod(615949 * t + 797807);
                     array[i][j] = (int)t - 0x80000;
                 }
             }
