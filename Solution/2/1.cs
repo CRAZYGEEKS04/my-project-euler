@@ -482,11 +482,12 @@ namespace ProjectEuler.Solution
         private long TonelliShanks(long n, int p)
         {
             // http://en.wikipedia.org/wiki/Shanks-Tonelli_algorithm
+            Modulo modulo = new Modulo(p);
             long s, q, z, t, c;
 
             // Step 1:
             if (p % 4 == 3)
-                return Misc.ModPow(n, (p + 1) / 4, p);
+                return modulo.Pow(n, (p + 1) / 4);
             s = 0;
             q = p - 1;
             while ((q & 1) == 0)
@@ -497,12 +498,12 @@ namespace ProjectEuler.Solution
 
             // Step 2:
             z = 2;
-            while ((t = Misc.ModPow(z, (p - 1) / 2, p)) == 1)
+            while ((t = modulo.Pow(z, (p - 1) / 2)) == 1)
                 z++;
-            c = Misc.ModPow(z, q, p);
+            c = modulo.Pow(z, q);
 
             // Step 3:
-            long r = Misc.ModPow(n, (q + 1) / 2, p);
+            long r = modulo.Pow(n, (q + 1) / 2);
 
             // Step 4:
             while (true)
@@ -511,21 +512,18 @@ namespace ProjectEuler.Solution
 
                 while (u != 1)
                 {
+                    u = modulo.Mul(u, u);
                     i++;
-                    u *= u;
-                    u %= p;
                 }
                 if (i == 0)
                     return r;
                 u = c;
                 while (i < s - 1)
                 {
-                    ++i;
-                    u *= u;
-                    u %= p;
+                    u = modulo.Mul(u, u);
+                    i++;
                 }
-                r *= u;
-                r %= p;
+                r = modulo.Mul(r, u);
             }
         }
 
@@ -559,6 +557,149 @@ namespace ProjectEuler.Solution
             }
 
             return flags.Skip(2).Count(it => !it).ToString();
+        }
+    }
+
+    /// <summary>
+    /// A positive integer with k (decimal) digits is called balanced if its first
+    /// [k/2] digits sum to the same value as its last [k/2] digits, where [x],
+    /// pronounced ceiling of x, is the smallest integer >= x, thus [π] = 4 and
+    /// [5] = 5.
+    ///
+    /// So, for example, all palindromes are balanced, as is 13722.
+    ///
+    /// Let T(n) be the sum of all balanced numbers less than 10^n.
+    /// Thus: T(1) = 45, T(2) = 540 and T(5) = 334795890.
+    ///
+    /// Find T(47) mod 3^15
+    /// </summary>
+    internal class Problem217 : Problem
+    {
+        private static Modulo modulo = new Modulo((long)BigInteger.Pow(3, 15));
+        private const int length = 47;
+
+        private class BSet
+        {
+            public int Length;
+            public long[] LeftSum;
+            public long[] RightSum;
+            public long[] LeftCounter;
+            public long[] RightCounter;
+
+            public BSet(int l)
+            {
+                Length = l / 2;
+                LeftSum = new long[9 * Length + 1];
+                RightSum = new long[9 * Length + 1];
+                LeftCounter = new long[9 * Length + 1];
+                RightCounter = new long[9 * Length + 1];
+            }
+
+            public long GetSumOfBalancedNumbers()
+            {
+                checked
+                {
+                    // Get sum of all balanced numbers lr where sum(l) = sum(r)
+                    long ret = 0;
+
+                    for (int i = 0; i <= 9 * Length; i++)
+                    {
+                        // Add sum of l0
+                        ret += modulo.Mul(LeftSum[i], RightCounter[i]);
+                        // Add sum of 0r
+                        ret += modulo.Mul(RightSum[i], LeftCounter[i]);
+                        ret = modulo.Mod(ret);
+                    }
+
+                    return ret;
+                }
+            }
+
+            public long GetSumOfBalancedNumbersPlus()
+            {
+                checked
+                {
+                    // Get sum of all balanced numbers l*r where sum(l) = sum(r)
+                    long ret = 0;
+                    long pow = modulo.Pow(10, Length);
+
+                    for (int i = 0; i <= 9 * Length; i++)
+                    {
+                        // Add sum of l00
+                        ret += modulo.Mul(LeftSum[i] * 10, RightCounter[i] * 10);
+                        // Add sum of 00r
+                        ret += modulo.Mul(RightSum[i], LeftCounter[i] * 10);
+                        // Add sum of 0*0
+                        ret += modulo.Mul(45 * pow, modulo.Mul(LeftCounter[i], RightCounter[i]));
+                        ret = modulo.Mod(ret);
+                    }
+
+                    return ret;
+                }
+            }
+        }
+
+        public Problem217() : base(217) { }
+
+        private BSet GetNext(BSet old)
+        {
+            checked
+            {
+                BSet ret = new BSet(old.Length * 2 + 2);
+                long pow = modulo.Pow(10, old.Length);
+
+                for (int suml = 1; suml <= old.Length * 9; suml++)
+                {
+                    for (int l = 0; l < 10; l++)
+                    {
+                        ret.LeftSum[suml + l] = modulo.Add(ret.LeftSum[suml + l], old.LeftSum[suml] * 100 + modulo.Mul(pow * 10 * l, old.LeftCounter[suml]));
+                        ret.LeftCounter[suml + l] = modulo.Add(ret.LeftCounter[suml + l], old.LeftCounter[suml]);
+                    }
+                }
+                for (int sumr = 0; sumr <= old.Length * 9; sumr++)
+                {
+                    for (int r = 0; r < 10; r++)
+                    {
+                        ret.RightSum[sumr + r] = modulo.Add(ret.RightSum[sumr + r], old.RightSum[sumr] + modulo.Mul(r * pow, old.RightCounter[sumr]));
+                        ret.RightCounter[sumr + r] = modulo.Add(ret.RightCounter[sumr + r], old.RightCounter[sumr]);
+                    }
+                }
+
+                return ret;
+            }
+        }
+
+        protected override string Action()
+        {
+            BSet s = new BSet(2);
+            long sum = 45;
+            int l, r;
+
+            for (l = 1; l < 10; l++)
+            {
+                s.LeftSum[l] = l * 10;
+                s.LeftCounter[l] = 1;
+            }
+            for (r = 0; r < 10; r++)
+            {
+                s.RightSum[r] = r;
+                s.RightCounter[r] = 1;
+            }
+
+            for (l = 2; l <= length; l++)
+            {
+                if (l % 2 == 0)
+                {
+                    sum += s.GetSumOfBalancedNumbers();
+                }
+                else
+                {
+                    sum += s.GetSumOfBalancedNumbersPlus();
+                    s = GetNext(s);
+                }
+            }
+
+            return modulo.Mod(sum).ToString();
         }
     }
 }
