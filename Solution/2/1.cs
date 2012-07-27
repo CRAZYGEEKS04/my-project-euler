@@ -652,7 +652,8 @@ namespace ProjectEuler.Solution
                 {
                     for (int l = 0; l < 10; l++)
                     {
-                        ret.LeftSum[suml + l] = modulo.Add(ret.LeftSum[suml + l], old.LeftSum[suml] * 100 + modulo.Mul(pow * 10 * l, old.LeftCounter[suml]));
+                        ret.LeftSum[suml + l] = modulo.Add(ret.LeftSum[suml + l], old.LeftSum[suml] * 100
+                            + modulo.Mul(pow * 10 * l, old.LeftCounter[suml]));
                         ret.LeftCounter[suml + l] = modulo.Add(ret.LeftCounter[suml + l], old.LeftCounter[suml]);
                     }
                 }
@@ -660,7 +661,8 @@ namespace ProjectEuler.Solution
                 {
                     for (int r = 0; r < 10; r++)
                     {
-                        ret.RightSum[sumr + r] = modulo.Add(ret.RightSum[sumr + r], old.RightSum[sumr] + modulo.Mul(r * pow, old.RightCounter[sumr]));
+                        ret.RightSum[sumr + r] = modulo.Add(ret.RightSum[sumr + r], old.RightSum[sumr]
+                            + modulo.Mul(r * pow, old.RightCounter[sumr]));
                         ret.RightCounter[sumr + r] = modulo.Add(ret.RightCounter[sumr + r], old.RightCounter[sumr]);
                     }
                 }
@@ -700,6 +702,73 @@ namespace ProjectEuler.Solution
             }
 
             return modulo.Mod(sum).ToString();
+        }
+    }
+
+    /// <summary>
+    /// Consider the right angled triangle with sides a=7, b=24 and c=25. The area of
+    /// this triangle is 84, which is divisible by the perfect numbers 6 and 28.
+    /// Moreover it is a primitive right angled triangle as gcd(a,b)=1 and gcd(b,c)=1.
+    /// Also c is a perfect square.
+    ///
+    /// We will call a right angled triangle perfect if
+    /// -it is a primitive right angled triangle
+    /// -its hypotenuse is a perfect square
+    ///
+    /// We will call a right angled triangle super-perfect if
+    /// -it is a perfect right angled triangle and
+    /// -its area is a multiple of the perfect numbers 6 and 28.
+    ///
+    /// How many perfect right-angled triangles with c <= 10^16 exist that are not
+    /// super-perfect?
+    /// </summary>
+    internal class Problem218 : Problem
+    {
+        private static long upper = (long)BigInteger.Pow(10, 16);
+
+        public Problem218() : base(218) { }
+
+        protected override string Action()
+        {
+            /**
+             * Proof from forum thread:
+             *
+             * Let S1=(a,b,c) be a perfect right triangle
+             * Let, c=k^2. k>0 and is an integer
+             *
+             * Also, a=i^2-j^2, b=2ij, c=i^2+j^2 for some i,j with i>j, i,j>0, gcd(i,j)=1 and i+j odd.
+             * This comes from the definition of a primitive pythagorean triple.
+             *
+             * Then, i^2+j^2=k^2. Hence, S2=(i,j,k) is a pythagorean triple.
+             * It can be shown that S2 is a primitive triple as k^2 mod i^2 = (i^2+j^2) mod i^2 = j^2 mod i^2.
+             * Hence, gcd(k,i)=gcd(i,j) which is 1. Similarly, gcd(k,j)=1.
+             *
+             * Area A1 of S1 is ab/2 = ij(i^2-j^2).
+             * For S1 to be super perfect, A1 must be divisible by 3,4 and 7.
+             *
+             * As S2 is a pythagorean triple, i and j are of the form r^2-s^2, 2rs where r>s>0 and r,s are integers.
+             * Also, one of r,s is even.
+             *
+             * Hence, 2rs mod 4 = 0 or one of i,j mod 4 =0. Therefore, A1 mod 4 = 0
+             *
+             * Let r1=r mod 3 and s1 = s mod 3
+             * If r1=0 or s1=0, 2rs mod 3 = 0.
+             * If r1=s1, r^2-s^2 mod 3 = 0.
+             * if r1!=s1 and r1,s1!=0, r1^2-s1^2 is in (-3,3) or congruent to 0 mod 3.
+             * Therefore, either 2rs or r^2-s^2 mod 3 = 0 or one of i,j mod 3 = 0 and hence A1 mod 3 = 0
+             *
+             * Let i1=i mod 7, j1= j mod 7, k1 = k mod 7
+             * if i1=0 or j1=0, A1 mod 7 = 0
+             * Otherwise, let us consider i^2+j^=k^2
+             * As any square mod 7 is in (0,1,2,4), the only non zero values for i1 and j1 that result in a valid value of k1 are for i1=j1.
+             * This can be seen by enumerating all combinations of i1,j1 for i1,j1 in (1,2,4) and k1 in (0,1,2,4)
+             * If i1=j1, the i^2-j^2 mod 7 = 0. Hence, A1 mod 7 = 0
+             *
+             * So, A1 mod 4 = 0, A1 mod 3 = 0 and A1 mod 7 = 0. Hence, A1 is divided by 6 (2*3) and 28 (4*7)
+             * So, all S1 are super perfect.
+             */
+
+            return "0";
         }
     }
 }
