@@ -771,4 +771,85 @@ namespace ProjectEuler.Solution
             return "0";
         }
     }
+
+    /// <summary>
+    /// Let A and B be bit strings (sequences of 0's and 1's).
+    /// If A is equal to the leftmost length(A) bits of B, then A is said to be a
+    /// prefix of B.
+    /// For example, 00110 is a prefix of 001101001, but not of 00111 or 100110.
+    ///
+    /// A prefix-free code of size n is a collection of n distinct bit strings such
+    /// that no string is a prefix of any other. For example, this is a prefix-free
+    /// code of size 6:
+    ///
+    /// 0000, 0001, 001, 01, 10, 11
+    ///
+    /// Now suppose that it costs one penny to transmit a '0' bit, but four pence to
+    /// transmit a '1'.
+    /// Then the total cost of the prefix-free code shown above is 35 pence, which
+    /// happens to be the cheapest possible for the skewed pricing scheme in question.
+    /// In short, we write Cost(6) = 35.
+    ///
+    /// What is Cost(10^9)?
+    /// </summary>
+    internal class Problem219 : Problem
+    {
+        private const int size = 1000000000;
+
+        public Problem219() : base(219) { }
+
+        protected override string Action()
+        {
+            /**
+             * All prefix-free codes are leaf nodes of a binary-tree
+             *
+             * Every time, you took away a leaf node and replace it with two leaf nodes beneath it.
+             * Assume the node you take costs x, where x is the cost of the cheapest leaf available
+             * C(2)=5, x=1
+             * C(3)=11, x=2
+             * C(4)=18, x=3
+             * ...
+             * Using a sorted stack would work
+             *
+             * Also, since we always pick the cheapest node from the stack and add x+1 and x+4 into the stack,
+             * every element in the stack must differ at most 4, no need to implement a stack
+             */
+            int[] counter = new int[5];
+            int current = 0;
+
+            // First element 0
+            counter[0] = 1;
+            for (int i = 2; i <= size; i++)
+            {
+                counter[0]--;
+                counter[1]++;
+                counter[4]++;
+
+                if (counter[0] == 0)
+                {
+                    for (int c = 1; c < 5; c++)
+                        counter[c - 1] = counter[c];
+                    counter[4] = 0;
+                    current++;
+                }
+            }
+
+            long sum = 0, left = size;
+            for (int i = 0; i < 5; i++)
+            {
+                if (left > counter[i])
+                {
+                    sum += (long)counter[i] * (current + i);
+                    left -= counter[i];
+                }
+                else
+                {
+                    sum += left * (current + i);
+                    break;
+                }
+            }
+
+            return sum.ToString();
+        }
+    }
 }
