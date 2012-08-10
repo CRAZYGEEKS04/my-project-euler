@@ -815,26 +815,35 @@ namespace ProjectEuler.Solution
              * every element in the stack must differ at most 4, no need to implement a stack
              */
             int[] counter = new int[5];
-            int current = 0;
+            int current = 0, left = size - 1;
+            long sum = 0;
 
             // First element 0
             counter[0] = 1;
-            for (int i = 2; i <= size; i++)
+            while (left != 0)
             {
-                counter[0]--;
-                counter[1]++;
-                counter[4]++;
-
-                if (counter[0] == 0)
+                if (counter[0] <= left)
                 {
-                    for (int c = 1; c < 5; c++)
-                        counter[c - 1] = counter[c];
+                    left -= counter[0];
+                    counter[1] += counter[0];
+                    counter[4] += counter[0];
+                    counter[0] = counter[1];
+                    counter[1] = counter[2];
+                    counter[2] = counter[3];
+                    counter[3] = counter[4];
                     counter[4] = 0;
                     current++;
                 }
+                else
+                {
+                    counter[0] -= left;
+                    counter[1] += left;
+                    counter[4] += left;
+                    left = 0;
+                }
             }
 
-            long sum = 0, left = size;
+            left = size;
             for (int i = 0; i < 5; i++)
             {
                 if (left > counter[i])
@@ -844,7 +853,7 @@ namespace ProjectEuler.Solution
                 }
                 else
                 {
-                    sum += left * (current + i);
+                    sum += (long)left * (current + i);
                     break;
                 }
             }
