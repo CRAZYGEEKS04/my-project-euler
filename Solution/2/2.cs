@@ -180,4 +180,66 @@ namespace ProjectEuler.Solution
             return string.Format("{0},{1}", ret.X, ret.Y);
         }
     }
+
+    /// <summary>
+    /// We shall call a positive integer A an "Alexandrian integer", if there exist
+    /// integers p, q, r such that:
+    ///
+    /// A = p * q * r and 1/A = 1/p + 1/q + 1/r
+    ///
+    /// For example, 630 is an Alexandrian integer (p = 5, q = -7, r = -18). In fact,
+    /// 630 is the 6th Alexandrian integer, the first 6 Alexandrian integers being: 6,
+    /// 42, 120, 156, 420 and 630.
+    ///
+    /// Find the 150000th Alexandrian integer.
+    /// </summary>
+    internal class Problem221 : Problem
+    {
+        private const int index = 150000;
+
+        public Problem221() : base(221) { }
+
+        protected override string Action()
+        {
+            var queue = new SortedList<long, Tuple<long, long, long>>();
+            long al, a, b, c;
+
+            /**
+             * A = p*q*r = A(q*r + p*r + p*q)
+             * => Find all p,q,r where p*q + p*r + q*r = 1
+             *
+             * assume r > 0 > p, q, r(p+q) = 1-p*q => r = (1-p*q)/(p+q)
+             * => r = (p*p + 1 - p*(p+q))/(p+q)
+             *
+             * so p+q divides p*p+1, find all factors of p*p+1
+             *
+             * --- The following algorithm comes from Assato in P221 Thread ---
+             *
+             * If (a,b,c) is an answer, then (b, 2b-a, 2b+c) and (c, 2c-a, 2c+b) are answers too,
+             * and from (1,2,3) we can generate every Alexandrian integer
+             */
+            queue.Add(6, new Tuple<long, long, long>(1, 2, 3));
+
+            for (int i = 0; i < index; i++)
+            {
+                var triple = queue.Values[i];
+
+                a = triple.Item2;
+                b = a * 2 - triple.Item1;
+                c = a * 2 + triple.Item3;
+                al = a * b * c;
+                if (long.MaxValue / c > a * b && !queue.ContainsKey(al))
+                    queue.Add(al, new Tuple<long, long, long>(a, b, c));
+
+                a = triple.Item3;
+                b = a * 2 - triple.Item1;
+                c = a * 2 + triple.Item2;
+                al = a * b * c;
+                if (long.MaxValue / c > a * b && !queue.ContainsKey(al))
+                    queue.Add(al, new Tuple<long, long, long>(a, b, c));
+            }
+
+            return queue.Keys[index - 1].ToString();
+        }
+    }
 }
