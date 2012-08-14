@@ -325,4 +325,39 @@ namespace ProjectEuler.Solution
             return counter.ToString();
         }
     }
+
+    /// <summary>
+    /// Let us call an integer sided triangle with sides a <= b <= c barely obtuse if
+    /// the sides satisfy
+    /// a^2 + b^2 = c^2 - 1.
+    ///
+    /// How many barely obtuse triangles are there with perimeter <= 75,000,000?
+    /// </summary>
+    internal class Problem224 : Problem
+    {
+        private const int length = 75000000;
+
+        public Problem224() : base(224) { }
+
+        protected override string Action()
+        {
+            var queue = new Queue<int[]>();
+            var counter = 0;
+
+            queue.Enqueue(new int[] { 2, 2, 3 });
+            while (queue.Count != 0)
+            {
+                var tmp = queue.Dequeue();
+
+                counter++;
+                foreach (var n in TrinaryTree.GenerateNext(tmp))
+                {
+                    if (n.Sum() <= length)
+                        queue.Enqueue(n);
+                }
+            }
+
+            return counter.ToString();
+        }
+    }
 }
