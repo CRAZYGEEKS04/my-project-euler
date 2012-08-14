@@ -360,4 +360,59 @@ namespace ProjectEuler.Solution
             return counter.ToString();
         }
     }
+
+    /// <summary>
+    /// The sequence 1, 1, 1, 3, 5, 9, 17, 31, 57, 105, 193, 355, 653, 1201 ...
+    /// is defined by T1 = T2 = T3 = 1 and T(n) = T(n-1) + T(n-2) + T(n-3).
+    ///
+    /// It can be shown that 27 does not divide any terms of this sequence.
+    /// In fact, 27 is the first odd number with this property.
+    ///
+    /// Find the 124th odd number that does not divide any terms of the above sequence.
+    /// </summary>
+    internal class Problem225 : Problem
+    {
+        private const int index = 124;
+
+        public Problem225() : base(225) { }
+
+        private string GetIDX(int[] num, int idx)
+        {
+            return string.Join(",", num[idx % 3], num[(idx + 1) % 3], num[(idx + 2) % 3]);
+        }
+
+        private bool IsNonDivisor(int n)
+        {
+            var set = new HashSet<string>() { "1,1,1" };
+            var num = new int[3] { 1, 1, 1 };
+            int idx = 0;
+            string key;
+
+            while (true)
+            {
+                num[idx] = (num[idx] + num[(idx + 1) % 3] + num[(idx + 2) % 3]) % n;
+                if (num[idx] == 0)
+                    return false;
+                idx = (idx + 1) % 3;
+
+                key = GetIDX(num, idx);
+                if (set.Contains(key))
+                    return true;
+                set.Add(key);
+            }
+        }
+
+        protected override string Action()
+        {
+            int counter = 0, n;
+
+            for (n = 3; ; n += 2)
+            {
+                if (IsNonDivisor(n))
+                    counter++;
+                if (counter == index)
+                    return n.ToString();
+            }
+        }
+    }
 }
