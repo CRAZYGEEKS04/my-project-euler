@@ -2704,3 +2704,8 @@ What is the length of the shortest pipe, of internal radius 50mm, that can fully
 
 Give your answer in micrometres (10^-6 m) rounded to the nearest integer.
 ==========
+Let us call an integer sided triangle with sides a <= b <= c barely acute if the sides satisfy
+a^2 + b^2 = c^2 + 1.
+
+How many barely acute triangles are there with perimeter <= 25,000,000?
+==========

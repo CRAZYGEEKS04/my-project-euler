@@ -12,6 +12,24 @@ namespace ProjectEuler.Common.Miscellany
     {
         public static IEnumerable<int[]> GeneratePrimitive(int maxPerimeter)
         {
+            var queue = new Queue<int[]>();
+
+            queue.Enqueue(new int[] { 3, 4, 5 });
+            while (queue.Count != 0)
+            {
+                var tmp = queue.Dequeue();
+
+                foreach (var n in TrinaryTree.GenerateNext(tmp))
+                {
+                    if (n.Sum() <= maxPerimeter)
+                        queue.Enqueue(n);
+                }
+                yield return tmp;
+            }
+        }
+
+        public static IEnumerable<int[]> GeneratePrimitive2(int maxPerimeter)
+        {
             // http://en.wikipedia.org/wiki/Pythagorean_triple
             var ret = new int[3];
 
@@ -33,7 +51,7 @@ namespace ProjectEuler.Common.Miscellany
             }
         }
 
-        public static IEnumerable<int[]> GeneratePrimitiveAnother(int maxPerimeter)
+        public static IEnumerable<int[]> GeneratePrimitive3(int maxPerimeter)
         {
             /**
              * Given the integers u and v, (see: http://www.math.rutgers.edu/~erowland/pythagoreantriples.html)
@@ -46,6 +64,7 @@ namespace ProjectEuler.Common.Miscellany
              * Then
              * a = g + i, b = h + i, c = g + h + i
              */
+
             var ret = new int[3];
 
             for (int u = 1; u <= Misc.Sqrt(maxPerimeter); u += 2)
@@ -58,8 +77,11 @@ namespace ProjectEuler.Common.Miscellany
                     int g = u * u, h = 2 * v * v, i = 2 * u * v;
 
                     ret[0] = g + i;
+
                     ret[1] = h + i;
+
                     ret[2] = g + h + i;
+
                     if (ret.Sum() > maxPerimeter)
                         break;
 

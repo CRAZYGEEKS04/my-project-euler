@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using ProjectEuler.Common;
+using ProjectEuler.Common.Miscellany;
 
 namespace ProjectEuler.Solution
 {
@@ -285,6 +286,43 @@ namespace ProjectEuler.Solution
                 value += intersect[list[i]][list[i + 1]];
 
             return Math.Round((total - value) * 1000, 0).ToString();
+        }
+    }
+
+    /// <summary>
+    /// Let us call an integer sided triangle with sides a <= b <= c barely acute if
+    /// the sides satisfy
+    /// a^2 + b^2 = c^2 + 1.
+    ///
+    /// How many barely acute triangles are there with perimeter <= 25,000,000?
+    /// </summary>
+    internal class Problem223 : Problem
+    {
+        private const int length = 25000000;
+
+        public Problem223() : base(223) { }
+
+        protected override string Action()
+        {
+            var queue = new Queue<int[]>();
+            var counter = 0;
+
+            queue.Enqueue(new int[] { 1, 1, 1 });
+            // 1,1,1 will not generate 1,2n,2n
+            queue.Enqueue(new int[] { 1, 2, 2 });
+            while (queue.Count != 0)
+            {
+                var tmp = queue.Dequeue();
+
+                counter++;
+                foreach (var n in TrinaryTree.GenerateNext(tmp))
+                {
+                    if (n.Sum() <= length)
+                        queue.Enqueue(n);
+                }
+            }
+
+            return counter.ToString();
         }
     }
 }
