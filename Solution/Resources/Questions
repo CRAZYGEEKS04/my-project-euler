@@ -2700,3 +2700,7 @@ For example, 630 is an Alexandrian integer (p = 5, q = -7, r = -18). In fact, 63
 
 Find the 150000th Alexandrian integer.
 ==========
+What is the length of the shortest pipe, of internal radius 50mm, that can fully contain 21 balls of radii 30mm, 31mm, ..., 50mm?
+
+Give your answer in micrometres (10^-6 m) rounded to the nearest integer.
+==========

@@ -242,4 +242,49 @@ namespace ProjectEuler.Solution
             return queue.Keys[index - 1].ToString();
         }
     }
+
+    /// <summary>
+    /// What is the length of the shortest pipe, of internal radius 50mm, that can
+    /// fully contain 21 balls of radii 30mm, 31mm, ..., 50mm?
+    ///
+    /// Give your answer in micrometres (10^-6 m) rounded to the nearest integer.
+    /// </summary>
+    internal class Problem222 : Problem
+    {
+        private static int[] balls = Itertools.Range(30, 50).ToArray();
+
+        public Problem222() : base(222) { }
+
+        private double GetIntersection(int ab)
+        {
+            /**
+             * Pick two balls of radii a and b, the pipe length is
+             * a + b + sqrt((a+b)^2-(100-a-b)^2)
+             * the intersection part is a+b-sqrt((a+b)^2-(100-a-b)^2)
+             */
+            return ab - Math.Sqrt(ab * ab - (100 - ab) * (100 - ab));
+        }
+
+        protected override string Action()
+        {
+            var intersect = Itertools.Range(1, balls.Length).Select(it => new double[balls.Length]).ToArray();
+            int total = balls.Sum() * 2;
+            double value = 0;
+
+            for (int i = 0; i < balls.Length; i++)
+            {
+                for (int j = i + 1; j < balls.Length; j++)
+                    intersect[i][j] = intersect[j][i] = GetIntersection(balls[i] + balls[j]);
+            }
+
+            // By observation from less balls, pattern 49, 47, 45, 43, ..., 31, 30, 32, ... 50 is minimal sequence
+            var list = new List<int>(Itertools.Range(balls.Length % 2 == 0 ? balls.Length - 1 : balls.Length - 2, 0, 2));
+            list.AddRange(Itertools.Range(0, balls.Length - 1, 2));
+
+            for (int i = 0; i < list.Count - 1; i++)
+                value += intersect[list[i]][list[i + 1]];
+
+            return Math.Round((total - value) * 1000, 0).ToString();
+        }
+    }
 }

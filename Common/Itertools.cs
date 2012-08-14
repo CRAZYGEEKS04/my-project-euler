@@ -6,16 +6,16 @@ namespace ProjectEuler.Common
 {
     public static class Itertools
     {
-        public static IEnumerable<int> Range(int start, int end)
+        public static IEnumerable<int> Range(int start, int end, int step = 1)
         {
             if (start <= end)
             {
-                for (int i = start; i <= end; i++)
+                for (int i = start; i <= end; i += step)
                     yield return i;
             }
             else
             {
-                for (int i = start; i >= end; i--)
+                for (int i = start; i >= end; i -= step)
                     yield return i;
             }
         }
