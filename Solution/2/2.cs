@@ -415,4 +415,72 @@ namespace ProjectEuler.Solution
             }
         }
     }
+
+    /// <summary>
+    /// The blancmange curve is the set of points (x,y) such that 0 <= x <= 1 and
+    /// y = Sum(s(2^n*x)/(2^n)), n in [0, inf)
+    /// where s(x) = the distance from x to the nearest integer.
+    ///
+    /// The area under the blancmange curve is equal to 1/2, shown in pink in the
+    /// diagram below.
+    ///
+    /// Let C be the circle with centre (1/4, 1/2) and radius 1/4, shown in black in
+    /// the diagram.
+    ///
+    /// What area under the blancmange curve is enclosed by C?
+    /// Give your answer rounded to eight decimal places in the form 0.abcdefgh
+    /// </summary>
+    internal class Problem226 : Problem
+    {
+        private static double eplison = Math.Pow(0.1, 25);
+
+        public Problem226() : base(226) { }
+
+        private double Gety(double x, int n)
+        {
+            double y = 0;
+            double den = 1.0;
+            double num = x;
+            long ix;
+
+            for (int i = 0; i < n; i++)
+            {
+                ix = (long)num;
+                if (num - ix >= 0.5)
+                    ix++;
+                y += (double)Math.Abs(ix - num) / den;
+                num *= 2.0;
+                den *= 2.0;
+            }
+            return y;
+        }
+
+        protected override string Action()
+        {
+            /**
+             * http://en.wikipedia.org/wiki/Blancmange_curve
+             *
+             * http://en.wikipedia.org/wiki/Circular_segment
+             */
+            double uc = 0.25 - Math.PI * (1.0 / 16) / 2;
+            int n = (int)Math.Ceiling(Math.Log(10, 2) * 8);
+            double step = Math.Pow(10, -8);
+            double wuc = 0;
+            double y, x = step, t;
+
+            while (true)
+            {
+                y = Gety(x, n);
+                // t is y on circle - y on curve
+                t = 0.5 * (1 - Math.Sqrt(2 * x * (-2 * x + 1))) - y;
+                if (t > 0)
+                    wuc += t * step;
+                else
+                    break;
+                x += step;
+            }
+
+            return (0.25 - uc + wuc).ToString("F8");
+        }
+    }
 }
