@@ -13,7 +13,12 @@ namespace ProjectEuler.Common
 
         public Fraction(BigInteger numerator, BigInteger denominator)
         {
-            var factor = Factor.GetCommonFactor(numerator, denominator);
+            BigInteger factor;
+
+            if (numerator >= 0)
+                factor = Factor.GetCommonFactor(numerator, denominator);
+            else
+                factor = Factor.GetCommonFactor(-numerator, denominator);
 
             Numerator = numerator / factor;
             Denominator = denominator / factor;

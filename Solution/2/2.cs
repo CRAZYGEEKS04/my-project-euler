@@ -432,8 +432,6 @@ namespace ProjectEuler.Solution
     /// </summary>
     internal class Problem226 : Problem
     {
-        private static double eplison = Math.Pow(0.1, 25);
-
         public Problem226() : base(226) { }
 
         private double Gety(double x, int n)
@@ -481,6 +479,75 @@ namespace ProjectEuler.Solution
             }
 
             return (0.25 - uc + wuc).ToString("F8");
+        }
+    }
+
+    /// <summary>
+    /// "The Chase" is a game played with two dice and an even number of players.
+    ///
+    /// The players sit around a table; the game begins with two opposite players
+    /// having one die each. On each turn, the two players with a die roll it.
+    /// If a player rolls a 1, he passes the die to his neighbour on the left; if he
+    /// rolls a 6, he passes the die to his neighbour on the right; otherwise, he keeps
+    /// the die for the next turn.
+    /// The game ends when one player has both dice after they have been rolled and
+    /// passed; that player has then lost.
+    ///
+    /// In a game with 100 players, what is the expected number of turns the game
+    /// lasts?
+    ///
+    /// Give your answer rounded to ten significant digits.
+    /// </summary>
+    internal class Problem227 : Problem
+    {
+        private const int nPlayers = 100;
+
+        public Problem227() : base(227) { }
+
+        private void AddCoefficients(Fraction[,] data, Fraction[] value, int n, int nn, Fraction v)
+        {
+            if (nn < 0)
+                nn *= -1;
+            if (nn > nPlayers / 2)
+                nn = nPlayers - nn;
+
+            if (nn != 0)
+                data[n, nn] += v;
+        }
+
+        protected override string Action()
+        {
+            /**
+             * The starting distance between two dice is 50, after every roll,
+             * there is a 1/36 chance distance -= 2, a 1/36 chance distance += 2,
+             * a 2/9 chance distance -=1, a 2/9 chance distance += 1
+             *
+             * assume the distance is n, the expected number of turns needs for game to end is x(n)
+             * x(n) = (x(n-2)+1)/36 + (x(n-1)+1)*2/9 + (x(n)+1)/2 + (x(n+1)+1)*2/9 + (x(n+2)+1)/36
+             * x(n)/2 - x(n-2)/36 - x(n-1)*2/9 - x(n+1)*2/9 - x(n+2)/36 = 1, n in [1, nPlayer/2]
+             */
+            var data = new Fraction[nPlayers / 2 + 1, nPlayers / 2 + 1];
+            var value = new Fraction[nPlayers / 2 + 1];
+            var list = new List<Fraction>();
+
+            for (int n = 1; n <= nPlayers / 2; n++)
+            {
+                value[n] = 1;
+
+                for (int i = 1; i <= nPlayers / 2; i++)
+                    data[n, i] = 0;
+                AddCoefficients(data, value, n, n, new Fraction(1, 2));
+                AddCoefficients(data, value, n, n - 2, new Fraction(-1, 36));
+                AddCoefficients(data, value, n, n - 1, new Fraction(-2, 9));
+                AddCoefficients(data, value, n, n + 1, new Fraction(-2, 9));
+                AddCoefficients(data, value, n, n + 2, new Fraction(-1, 36));
+                for (int i = 1; i <= nPlayers / 2; i++)
+                    list.Add(data[n, i]);
+            }
+
+            var ret = LinearEquation.Solve(new Matrix(list, nPlayers / 2, nPlayers / 2), value.Skip(1))[nPlayers / 2 - 1];
+
+            return ((double)ret.Numerator / (double)ret.Denominator).ToString("G10");
         }
     }
 }
