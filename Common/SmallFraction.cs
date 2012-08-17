@@ -12,7 +12,12 @@ namespace ProjectEuler.Common
 
         public SmallFraction(long numerator, long denominator)
         {
-            var factor = Factor.GetCommonFactor(numerator, denominator);
+            long factor;
+
+            if (numerator >= 0)
+                factor = Factor.GetCommonFactor(numerator, denominator);
+            else
+                factor = Factor.GetCommonFactor(-numerator, denominator);
 
             Numerator = numerator / factor;
             Denominator = denominator / factor;
