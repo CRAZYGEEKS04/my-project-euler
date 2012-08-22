@@ -308,6 +308,7 @@ namespace ProjectEuler.Solution
             var counter = 0;
 
             queue.Enqueue(new int[] { 1, 1, 1 });
+
             // 1,1,1 will not generate 1,2n,2n
             queue.Enqueue(new int[] { 1, 2, 2 });
             while (queue.Count != 0)
@@ -469,6 +470,7 @@ namespace ProjectEuler.Solution
             while (true)
             {
                 y = Gety(x, n);
+
                 // t is y on circle - y on curve
                 t = 0.5 * (1 - Math.Sqrt(2 * x * (-2 * x + 1))) - y;
                 if (t > 0)
@@ -511,8 +513,7 @@ namespace ProjectEuler.Solution
             if (nn > nPlayers / 2)
                 nn = nPlayers - nn;
 
-            if (nn != 0)
-                data[n, nn] += v;
+            data[n, nn] += v;
         }
 
         protected override string Action()
@@ -530,24 +531,81 @@ namespace ProjectEuler.Solution
             var value = new Fraction[nPlayers / 2 + 1];
             var list = new List<Fraction>();
 
+            // x(0) = 0
+            for (int i = 1; i <= nPlayers / 2; i++)
+                data[0, i] = 0;
+            data[0, 0] = 1;
+            value[0] = 0;
             for (int n = 1; n <= nPlayers / 2; n++)
             {
                 value[n] = 1;
 
-                for (int i = 1; i <= nPlayers / 2; i++)
+                for (int i = 0; i <= nPlayers / 2; i++)
                     data[n, i] = 0;
                 AddCoefficients(data, value, n, n, new Fraction(1, 2));
                 AddCoefficients(data, value, n, n - 2, new Fraction(-1, 36));
                 AddCoefficients(data, value, n, n - 1, new Fraction(-2, 9));
                 AddCoefficients(data, value, n, n + 1, new Fraction(-2, 9));
                 AddCoefficients(data, value, n, n + 2, new Fraction(-1, 36));
-                for (int i = 1; i <= nPlayers / 2; i++)
-                    list.Add(data[n, i]);
+            }
+            for (int i = 0; i <= nPlayers / 2; i++)
+            {
+                for (int j = 0; j <= nPlayers / 2; j++)
+                    list.Add(data[i, j]);
             }
 
-            var ret = LinearEquation.Solve(new Matrix(list, nPlayers / 2, nPlayers / 2), value.Skip(1))[nPlayers / 2 - 1];
+            var ret = LinearEquation.Solve(new Matrix(list, nPlayers / 2 + 1, nPlayers / 2 + 1), value)[nPlayers / 2];
 
             return ((double)ret.Numerator / (double)ret.Denominator).ToString("G10");
+        }
+    }
+
+    /// <summary>
+    /// Let Sn be the regular n-sided polygon – or shape – whose vertices vk
+    /// (k = 1,2,…,n) have coordinates:
+    ///
+    /// xk = cos((2k-1)/n X 180°)
+    /// yk = sin((2k-1)/n X 180°)
+    ///
+    /// Each Sn is to be interpreted as a filled shape consisting of all points on the
+    /// perimeter and in the interior.
+    ///
+    /// The Minkowski sum, S+T, of two shapes S and T is the result of adding every
+    /// point in S to every point in T, where point addition is performed
+    /// coordinate-wise: (u, v) + (x, y) = (u+x, v+y).
+    ///
+    /// For example, the sum of S3 and S4 is the six-sided shape shown in pink below:
+    ///
+    /// How many sides does S1864 + S1865 + … + S1909 have?
+    /// </summary>
+    internal class Problem228 : Problem
+    {
+        private const int start = 1864;
+        private const int end = 1909;
+
+        public Problem228() : base(228) { }
+
+        protected override string Action()
+        {
+            /**
+             * http://en.wikipedia.org/wiki/Minkowski_addition#Two_convex_polygons_in_the_plane
+             *
+             * idea - sort all by polar angles. For an n-gon, the angles are 0, 1/n, 2/n, ...
+             * of the way around, so this is the same as finding all unique fractions
+             * j/k where k goes 1864 to 1909, j goes 0 to k-1.
+             */
+
+            var vals = new HashSet<int>();
+            for (int k = start; k <= end; k++)
+            {
+                for (int j = 0; j < k; j++)
+                {
+                    int t = Factor.GetCommonFactor(j, k);
+                    vals.Add((k / t) * 10000 + (j / t));
+                }
+            }
+
+            return vals.Count().ToString();
         }
     }
 }
