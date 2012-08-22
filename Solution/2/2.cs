@@ -608,4 +608,149 @@ namespace ProjectEuler.Solution
             return vals.Count().ToString();
         }
     }
+
+    /// <summary>
+    /// Consider the number 3600. It is very special, because
+    ///
+    /// 3600 = 48^2 + 36^2
+    /// 3600 = 20^2 + 2 * 40^2
+    /// 3600 = 30^2 + 3 * 30^2
+    /// 3600 = 45^2 + 7 * 15^2
+    ///
+    /// Similarly, we find that 88201 = 99^2 + 280^2 = 287^2 + 2 * 54^2
+    /// = 283^2 + 3 * 52^2 = 197^2 + 7 * 84^2.
+    ///
+    /// In 1747, Euler proved which numbers are representable as a sum of two squares.
+    /// We are interested in the numbers n which admit representations of all of the
+    /// following four types:
+    ///
+    /// n = a1^2 + b1^2
+    /// n = a2^2 + 2 * b2^2
+    /// n = a3^2 + 3 * b3^2
+    /// n = a7^2 + 7 * b7^2,
+    ///
+    /// where the ak and bk are positive integers.
+    ///
+    /// There are 75373 such numbers that do not exceed 10^7.
+    /// How many such numbers are there that do not exceed 2*10^9?
+    /// </summary>
+    internal class Problem229 : Problem
+    {
+        private const int upper = 2000000000;
+
+        public Problem229() : base(229) { }
+
+        private void N1(byte[] flags)
+        {
+            int n, a2;
+
+            for (int a = 1; ; a++)
+            {
+                a2 = a * a;
+                if (a2 > upper / 2)
+                    break;
+                for (int b = a; ; b++)
+                {
+                    n = a2 + b * b;
+                    if (n > upper)
+                        break;
+
+                    if (n % 2 == 0)
+                        flags[(n - 1) / 2] |= 0x1;
+                    else
+                        flags[(n - 1) / 2] |= 0x10;
+                }
+            }
+        }
+
+        private void N2(byte[] flags)
+        {
+            int n, a2;
+
+            for (int a = 1; ; a++)
+            {
+                a2 = a * a;
+                if (a2 >= upper)
+                    break;
+                for (int b = 1; ; b++)
+                {
+                    n = a2 + 2 * b * b;
+                    if (n > upper)
+                        break;
+
+                    if (n % 2 == 0)
+                        flags[(n - 1) / 2] |= 0x2;
+                    else
+                        flags[(n - 1) / 2] |= 0x20;
+                }
+            }
+        }
+
+        private void N3(byte[] flags)
+        {
+            int n, a2;
+
+            for (int a = 1; ; a++)
+            {
+                a2 = a * a;
+                if (a2 >= upper)
+                    break;
+                for (int b = 1; ; b++)
+                {
+                    n = a2 + 3 * b * b;
+                    if (n > upper)
+                        break;
+
+                    if (n % 2 == 0)
+                        flags[(n - 1) / 2] |= 0x4;
+                    else
+                        flags[(n - 1) / 2] |= 0x40;
+                }
+            }
+        }
+
+        private void N4(byte[] flags)
+        {
+            int n, a2;
+
+            for (int a = 1; ; a++)
+            {
+                a2 = a * a;
+                if (a2 >= upper)
+                    break;
+                for (int b = 1; ; b++)
+                {
+                    n = a2 + 7 * b * b;
+                    if (n > upper)
+                        break;
+
+                    if (n % 2 == 0)
+                        flags[(n - 1) / 2] |= 0x8;
+                    else
+                        flags[(n - 1) / 2] |= 0x80;
+                }
+            }
+        }
+
+        protected override string Action()
+        {
+            var flags = new byte[upper / 2];
+            var counter = 0;
+
+            N1(flags);
+            N2(flags);
+            N3(flags);
+            N4(flags);
+
+            for (int i = 0; i < upper / 2; i++)
+            {
+                if ((flags[i] & 0xF) == 0xF)
+                    counter++;
+                if ((flags[i] & 0xF0) == 0xF0)
+                    counter++;
+            }
+
+            return counter.ToString();
+        }
+    }
 }
