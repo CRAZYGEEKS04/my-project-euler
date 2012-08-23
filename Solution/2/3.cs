@@ -117,4 +117,48 @@ namespace ProjectEuler.Solution
             return sum.ToString();
         }
     }
+
+    /// <summary>
+    /// The binomial coefficient C(10, 3) = 120.
+    /// 120 = 2^3 * 3 * 5 = 2 * 2 * 2 * 3 * 5, and 2 + 2 + 2 + 3 + 5 = 14.
+    /// So the sum of the terms in the prime factorisation of C(10, 3) is 14.
+    ///
+    /// Find the sum of the terms in the prime factorisation of C(20000000, 15000000).
+    /// </summary>
+    internal class Problem231 : Problem
+    {
+        private const int N = 20000000;
+        private const int C = 15000000;
+
+        public Problem231() : base(231) { }
+
+        private long GetSum(Prime prime, int l)
+        {
+            long sum = 0, factor;
+
+            foreach (var p in prime)
+            {
+                if (p > l)
+                    break;
+
+                factor = p;
+                while (factor <= l)
+                {
+                    sum += p * (l / factor);
+                    factor *= p;
+                }
+            }
+
+            return sum;
+        }
+
+        protected override string Action()
+        {
+            var p = new Prime(N);
+
+            p.GenerateAll();
+
+            return (GetSum(p, N) - GetSum(p, N - C) - GetSum(p, C)).ToString();
+        }
+    }
 }

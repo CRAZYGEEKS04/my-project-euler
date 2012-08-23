@@ -2805,3 +2805,9 @@ and for B the next hundred digits:
 
 Find sum(10^n * D(A,B)((127+19n)*7^n) n = 0, 1, ..., 17
 ==========
+The binomial coefficient C(10, 3) = 120.
+120 = 2^3 * 3 * 5 = 2 * 2 * 2 * 3 * 5, and 2 + 2 + 2 + 3 + 5 = 14.
+So the sum of the terms in the prime factorisation of C(10, 3) is 14.
+
+Find the sum of the terms in the prime factorisation of C(20000000, 15000000).
+==========
