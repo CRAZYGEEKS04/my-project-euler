@@ -161,4 +161,72 @@ namespace ProjectEuler.Solution
             return (GetSum(p, N) - GetSum(p, N - C) - GetSum(p, C)).ToString();
         }
     }
+
+    /// <summary>
+    /// Two players share an unbiased coin and take it in turns to play "The Race". On
+    /// Player 1's turn, he tosses the coin once: if it comes up Heads, he scores one
+    /// point; if it comes up Tails, he scores nothing. On Player 2's turn, she chooses
+    /// a positive integer T and tosses the coin T times: if it comes up all Heads, she
+    /// scores 2^(T-1) points; otherwise, she scores nothing. Player 1 goes first. The
+    /// winner is the first to 100 or more points.
+    ///
+    /// On each turn Player 2 selects the number, T, of coin tosses that maximises the
+    /// probability of her winning.
+    ///
+    /// What is the probability that Player 2 wins?
+    ///
+    /// Give your answer rounded to eight decimal places in the form 0.abcdefgh .
+    /// </summary>
+    internal class Problem232 : Problem
+    {
+        private const int scores = 100;
+
+        public Problem232() : base(232) { }
+
+        protected override string Action()
+        {
+            double[,] array = new double[scores + 1, scores + 1];
+
+            /**
+             * Array[a,b] stores the probability for Player 2 to win before Player 2 tosses
+             * when Player 1 has a points left and Player 2 has b points left
+             *
+             * when player 2 choose t' coins to toss to get t points with the probability p
+             *
+             * if b>t:
+             * array[a,b] = p * (array[a,b-t] / 2 + array[a-1,b-t]/2) + (1-p) * (array[a-1,b]/2 + array[a,b]/2)
+             * array[a,b] * (1+p) = array[a,b-t] * p + array[a-1,b-t] * p + array[a-1,b] * (1-p)
+             * else:
+             * array[a,b] = p + (1-p) * (array[a-1,b]/2 + array[a,b]/2)
+             * array[a,b] * (1+p) = 2p + array[a-1,b]*(1-p)
+             */
+            for (int a = 1; a <= scores; a++)
+                array[a, 0] = 1;
+            for (int b = 1; b <= scores; b++)
+                array[0, b] = 0;
+
+            for (int b = 1; b <= scores; b++)
+            {
+                for (int a = 1; a <= scores; a++)
+                {
+                    double p = 0.5, tmp;
+                    int t;
+
+                    array[a, b] = 0;
+                    for (t = 1; t < b; t *= 2)
+                    {
+                        tmp = (array[a, b - t] * p + array[a - 1, b - t] * p + array[a - 1, b] * (1 - p)) / (1 + p);
+                        if (tmp > array[a, b])
+                            array[a, b] = tmp;
+                        p /= 2;
+                    }
+                    tmp = (2 * p + array[a - 1, b] * (1 - p)) / (1 + p);
+                    if (tmp > array[a, b])
+                        array[a, b] = tmp;
+                }
+            }
+
+            return Math.Round(array[scores - 1, scores] / 2 + array[scores, scores] / 2, 8).ToString("F8");
+        }
+    }
 }
