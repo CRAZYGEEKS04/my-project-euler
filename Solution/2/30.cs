@@ -210,10 +210,9 @@ namespace ProjectEuler.Solution
                 for (int a = 1; a <= scores; a++)
                 {
                     double p = 0.5, tmp;
-                    int t;
 
                     array[a, b] = 0;
-                    for (t = 1; t < b; t *= 2)
+                    for (int t = 1; t < b; t *= 2)
                     {
                         tmp = (array[a, b - t] * p + array[a - 1, b - t] * p + array[a - 1, b] * (1 - p)) / (1 + p);
                         if (tmp > array[a, b])
@@ -227,6 +226,152 @@ namespace ProjectEuler.Solution
             }
 
             return Math.Round(array[scores - 1, scores] / 2 + array[scores, scores] / 2, 8).ToString("F8");
+        }
+    }
+
+    /// <summary>
+    /// Let f(N) be the number of points with integer coordinates that are on a circle
+    /// passing through (0,0), (N,0), (0,N), and (N,N).
+    ///
+    /// It can be shown that f(10000) = 36.
+    ///
+    /// What is the sum of all positive integers N <= 10^11 such that f(N) = 420 ?
+    /// </summary>
+    internal class Problem233 : Problem
+    {
+        private const long upper = 100000000000;
+
+        public Problem233() : base(233) { }
+
+        private List<long> GenerateNumbers(List<int> p)
+        {
+            var list = new List<long>();
+            long n1, n2, n3;
+
+            // case 1
+            foreach (var p1 in p)
+            {
+                n1 = Misc.Pow(p1, 3);
+                if (n1 > upper)
+                    break;
+
+                foreach (var p2 in p)
+                {
+                    if (p2 == p1)
+                        continue;
+                    n2 = n1 * p2 * p2;
+                    if (n2 > upper)
+                        break;
+
+                    foreach (var p3 in p)
+                    {
+                        if (p3 == p1 || p3 == p2)
+                            continue;
+                        n3 = n2 * p3;
+                        if (n3 > upper)
+                            break;
+                        list.Add(n3);
+                    }
+                }
+            }
+
+            // case 2
+            foreach (var p1 in p)
+            {
+                n1 = Misc.Pow(p1, 7);
+                if (n1 > upper)
+                    break;
+
+                foreach (var p2 in p)
+                {
+                    if (p2 == p1)
+                        continue;
+                    n2 = n1 * Misc.Pow(p2, 3);
+                    if (n2 > upper)
+                        break;
+                    list.Add(n2);
+                }
+            }
+
+            // case 3
+            foreach (var p1 in p)
+            {
+                n1 = Misc.Pow(p1, 10);
+                if (n1 > upper)
+                    break;
+
+                foreach (var p2 in p)
+                {
+                    if (p2 == p1)
+                        continue;
+                    n2 = n1 * p2 * p2;
+                    if (n2 > upper)
+                        break;
+                    list.Add(n2);
+                }
+            }
+
+            return list;
+        }
+
+        private List<long> GenerateCounter(List<int> p, int length)
+        {
+            var list = new List<long>();
+            var flags = new bool[length + 1];
+
+            foreach (var f in p)
+            {
+                for (int i = f; i <= length; i += f)
+                    flags[i] = true;
+            }
+
+            list.Add(0);
+            for (int i = 1; i <= length; i++)
+            {
+                if (flags[i])
+                    list.Add(list[i - 1]);
+                else
+                    list.Add(list[i - 1] + i);
+            }
+
+            return list;
+        }
+
+        protected override string Action()
+        {
+            /**
+             * Center of the circle is (N/2, N/2)
+             * Think about a lattice point on the left side of the arc between the top corners of the square.
+             * By symmetry there is another such point directly to the right of it and a third directly below.
+             * The hypotenuse The triangle formed by these three points is the diameter of the circle
+             * N^2+N^2 = 2N^2 => 4 points
+             * Finding ways to represent 2N^2 = a^2+b^2
+             *
+             * http://mathworld.wolfram.com/SchinzelsTheorem.html
+             * assume N = p1^a1 * p2^a2 * ... * pn^an = p11^a11 * ... * p1n^a1n * p31^a31 *... * p3n^a3n * pi^ai * ...
+             * f(N) = 4((a1*2+1)*(a2*2+1)*...*(an*2+1)) where pn mod 4 = 1
+             *
+             * f(N) = 420 => 4 * 3*5*7
+             * case 1: N = p1 * p2^2 * p3^3
+             * case 2: N = p1^3 * p2^7
+             * case 3: N = p1^2 * p2^10
+             * case 4: N = p1 * p2^17, impossible
+             * case 5: N = p1^52, impossible
+             */
+            var p = new Prime((int)(upper / 5 / 5 / 5 / 13 / 13));
+            var nums = new List<long>();
+            long sum = 0;
+
+            p.GenerateAll();
+
+            var p5 = p.Nums.Where(it => it % 4 == 1).ToList();
+            var sums = GenerateCounter(p5, (int)(upper / 5 / 5 / 5 / 13 / 13 / 17));
+            var list = GenerateNumbers(p5);
+
+            foreach (var n in list)
+                sum += n * sums[(int)(upper / n)];
+
+            return sum.ToString();
         }
     }
 }

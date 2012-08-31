@@ -36,6 +36,21 @@ namespace ProjectEuler.Common
             return true;
         }
 
+        public static long Pow(long x, int e)
+        {
+            long ret = 1;
+
+            while (e != 0)
+            {
+                if ((e & 1) != 0)
+                    ret *= x;
+                x *= x;
+                e >>= 1;
+            }
+
+            return ret;
+        }
+
         public static bool IsPerfectSquare(long number)
         {
             var tmp = (long)(Math.Sqrt(number) + 0.1);
