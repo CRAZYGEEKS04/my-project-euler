@@ -125,5 +125,15 @@ namespace ProjectEuler.Common
             else
                 return ret;
         }
+
+        public static long SumOfDivisor(long start, long end, long divisor)
+        {
+            long p1 = start / divisor, p2 = end / divisor;
+
+            if (start % divisor != 0)
+                p1++;
+
+            return (p1 + p2) * (p2 - p1 + 1) / 2 * divisor;
+        }
     }
 }

@@ -374,4 +374,56 @@ namespace ProjectEuler.Solution
             return sum.ToString();
         }
     }
+
+    /// <summary>
+    /// For an integer n >= 4, we define the lower prime square root of n, denoted by
+    /// lps(n), as the largest prime <= sqrt(n) and the upper prime square root of n,
+    /// ups(n), as the smallest prime >= sqrt(n).
+    ///
+    /// So, for example, lps(4) = 2 = ups(4), lps(1000) = 31, ups(1000) = 37.
+    /// Let us call an integer n >= 4 semidivisible, if one of lps(n) and ups(n)
+    /// divides n, but not both.
+    ///
+    /// The sum of the semidivisible numbers not exceeding 15 is 30, the numbers are
+    /// 8, 10 and 12.
+    /// 15 is not semidivisible because it is a multiple of both lps(15) = 3 and
+    /// ups(15) = 5.
+    /// As a further example, the sum of the 92 semidivisible numbers up to 1000 is
+    /// 34825.
+    ///
+    /// What is the sum of all semidivisible numbers not exceeding 999966663333 ?
+    /// </summary>
+    internal class Problem234 : Problem
+    {
+        private const long upper = 999966663333;
+
+        public Problem234() : base(234) { }
+
+        private long CalculateSum(long start, long end, long lps, long ups)
+        {
+            return Misc.SumOfDivisor(start, end, lps) + Misc.SumOfDivisor(start, end, ups)
+                - Misc.SumOfDivisor(start, end, lps * ups) * 2;
+        }
+
+        protected override string Action()
+        {
+            var p = new Prime((int)Misc.Sqrt(upper) + 1000);
+            long sum = 0, start, end;
+
+            p.GenerateAll();
+            for (int i = 0; ; i++)
+            {
+                start = (long)p.Nums[i] * p.Nums[i] + 1;
+                end = (long)p.Nums[i + 1] * p.Nums[i + 1] - 1;
+
+                if (start > upper)
+                    break;
+                if (end > upper)
+                    end = upper;
+                sum += CalculateSum(start, end, p.Nums[i], p.Nums[i + 1]);
+            }
+
+            return sum.ToString();
+        }
+    }
 }
