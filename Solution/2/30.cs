@@ -426,4 +426,53 @@ namespace ProjectEuler.Solution
             return sum.ToString();
         }
     }
+
+    /// <summary>
+    /// Given is the arithmetic-geometric sequence u(k) = (900-3k)r^(k-1).
+    /// Let s(n) = Σ(k=1...n)u(k).
+    ///
+    /// Find the value of r for which s(5000) = -600,000,000,000.
+    ///
+    /// Give your answer rounded to 12 places behind the decimal point.
+    /// </summary>
+    internal class Problem235 : Problem
+    {
+        private const long value = -200000000000;
+
+        public Problem235() : base(235) { }
+
+        private double GetValue(double r)
+        {
+            double sum = 0, rk = 1;
+
+            for (int i = 1; i <= 5000; i++)
+            {
+                sum += (300 - i) * rk;
+                rk *= r;
+            }
+
+            return sum;
+        }
+
+        protected override string Action()
+        {
+            double min = 1, max = 2, r = (min + max) / 2;
+
+            while (true)
+            {
+                var tmp = GetValue(r);
+
+                if (Math.Abs(value - tmp) < 1)
+                    break;
+                if (tmp > value)
+                    min = r;
+                else
+                    max = r;
+
+                r = (min + max) / 2;
+            }
+
+            return Math.Round(r, 12).ToString();
+        }
+    }
 }
