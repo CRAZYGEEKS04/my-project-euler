@@ -41,7 +41,7 @@ namespace ProjectEuler.Common
 
         public override string ToString()
         {
-            return Numerator.ToString() + " / " + Denominator.ToString();
+            return Numerator.ToString() + "/" + Denominator.ToString();
         }
 
         public int CompareTo(Fraction other)

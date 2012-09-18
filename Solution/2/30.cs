@@ -512,36 +512,59 @@ namespace ProjectEuler.Solution
     /// </summary>
     internal class Problem236 : Problem
     {
-        private static int[] A = new int[] { 5248, 1312, 2624, 5760, 3936 };
-        private static int[] B = new int[] { 640, 1888, 3776, 3776, 5664 };
+        // Merge Product 2,3 and 5
+        //private static int[] A = new int[] { 5248, 1312, 2624, 5760, 3936 };
+        //private static int[] B = new int[] { 640, 1888, 3776, 3776, 5664 };
+
+        private static int[] A = new int[] { 5248, 5760, 7872 };
+        private static int[] B = new int[] { 640, 3776, 11328 };
 
         public Problem236() : base(236) { }
 
         private bool Check(int badA, int badB, SmallFraction m, int id)
         {
-            return true;
+            long num, den, lcf;
+            int a, b;
+
+            if (id == A.Length - 1)
+                return ((badA * B[id] * m.Numerator) == (badB * A[id] * m.Denominator));
+
+            den = A[id] * m.Denominator;
+            num = B[id] * m.Numerator;
+            lcf = Factor.GetCommonFactor(den, num);
+            a = (int)(den / lcf);
+            b = (int)(num / lcf);
+
+            for (int i = 1; ; i++)
+            {
+                if (a * i >= badA || a * i >= A[id] || b * i >= badB || b * i >= B[id])
+                    break;
+                if (Check(badA - a * i, badB - b * i, m, id + 1))
+                    return true;
+            }
+
+            return false;
         }
 
         protected override string Action()
         {
-            var list = new HashSet<SmallFraction>();
             int sumA = A.Sum(), sumB = B.Sum();
-            SmallFraction m;
+            SmallFraction m, maxm = 1;
 
             for (int badA = 5; badA <= sumA; badA++)
             {
-                for (int badB = 5; badB <= badA * sumB / sumA; badB++)
+                for (int badB = 5; badB <= sumB; badB++)
                 {
                     m = new SmallFraction(badA * sumB, badB * sumA);
 
-                    if (list.Contains(m))
-                        continue;
+                    if (m <= maxm)
+                        break;
                     if (Check(badA, badB, m, 0))
-                        list.Add(m);
+                        maxm = m;
                 }
             }
 
-            return list.Max().ToString();
+            return maxm.ToString();
         }
     }
 }
