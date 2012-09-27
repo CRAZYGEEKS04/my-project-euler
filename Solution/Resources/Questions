@@ -2866,3 +2866,11 @@ There are thirty-five m>1 for which this surprising result could have occurred, 
 What's the largest possible value of m?
 Give your answer as a fraction reduced to its lowest terms, in the form u/v.
 ==========
+Let T(n) be the number of tours over a 4 x n playing board such that:
+ •The tour starts in the top left corner.
+ •The tour consists of moves that are up, down, left, or right one square.
+ •The tour visits each square exactly once.
+ •The tour ends in the bottom left corner.
+
+T(10) is 2329. What is T(10^12) modulo 10^8?
+==========

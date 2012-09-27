@@ -567,4 +567,45 @@ namespace ProjectEuler.Solution
             return maxm.ToString();
         }
     }
+
+    /// <summary>
+    /// Let T(n) be the number of tours over a 4 x n playing board such that:
+    ///  •The tour starts in the top left corner.
+    ///  •The tour consists of moves that are up, down, left, or right one square.
+    ///  •The tour visits each square exactly once.
+    ///  •The tour ends in the bottom left corner.
+    ///
+    /// T(10) is 2329. What is T(10^12) modulo 10^8?
+    /// </summary>
+    internal class Problem237 : Problem
+    {
+        private const long e = 1000000000000;
+        private const long modulo = 100000000;
+
+        public Problem237() : base(237) { }
+
+        protected override string Action()
+        {
+            /**
+             * A Matrix Method for Counting Hamiltonian Cycles on Grid Graphs (very impressive!)
+             *
+             * http://www.sciencedirect.com/science/article/pii/S0195669884710316
+             *
+             * h(n) = 2h(n-1) + 2h(n-2) - 2h(n-3) + h(n-4)
+             */
+            long[] m = new long[] {
+                1, 1, 0, 0,
+                2, 0, 1, 1,
+                2, 0, 1, 0,
+                0, 1, 0, 0,
+            };
+            var matrix = new SmallMatrix(m, 4, 4);
+            var h = new SmallMatrix(new long[] { 0, 1, 1, 0 }, 4, 1);
+            var ret = SmallMatrix.ModPow(matrix, e - 1, modulo);
+
+            ret = ret * h;
+
+            return (ret[1, 0] % modulo).ToString();
+        }
+    }
 }
