@@ -137,7 +137,7 @@ namespace ProjectEuler.Solution
             var xyz = new int[6];
             int counter = 0;
 
-            foreach (var value in LaggedFibonacci.Generate())
+            foreach (var value in PseudoNumberGenerator.GenerateLaggedFibonacci())
             {
                 if (counter % 6 < 3)
                     xyz[counter % 6] = value % 10000;

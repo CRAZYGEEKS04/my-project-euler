@@ -110,6 +110,19 @@ namespace ProjectEuler.Common
             return new BigInteger(tmp) % range;
         }
 
+        public static int GetDigitalSum(int number)
+        {
+            int sum = 0;
+
+            while (number > 0)
+            {
+                sum += number % 10;
+                number /= 10;
+            }
+
+            return sum;
+        }
+
         public static int GetDigitalRoot(int number)
         {
             int ret = 0;

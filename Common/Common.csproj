@@ -52,7 +52,7 @@
     <Compile Include="ExactCover\DancingLinks.cs" />
     <Compile Include="Miscellany\FareySequence.cs" />
     <Compile Include="Miscellany\GaussianCircle.cs" />
-    <Compile Include="Miscellany\LaggedFibonacci.cs" />
+    <Compile Include="Miscellany\PseudoNumberGenerator.cs" />
     <Compile Include="Miscellany\SmallContinuedFraction.cs" />
     <Compile Include="Miscellany\TrinaryTree.cs" />
     <Compile Include="Modulo.cs" />

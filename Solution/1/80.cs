@@ -581,7 +581,7 @@ namespace ProjectEuler.Solution
 
             for (int i = 0; i < modulo; i++)
                 array[i] = DisjointSet.MakeSet();
-            foreach (var i in LaggedFibonacci.Generate())
+            foreach (var i in PseudoNumberGenerator.GenerateLaggedFibonacci())
             {
                 if (counter % 2 == 0)
                     caller = i;
