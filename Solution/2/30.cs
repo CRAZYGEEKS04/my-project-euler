@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using ProjectEuler.Common;
 using ProjectEuler.Common.Miscellany;
@@ -656,7 +657,7 @@ namespace ProjectEuler.Solution
 
         private long GetSum(List<byte> list, int period)
         {
-            BitVector flags = new BitVector(period);
+            BitVector flags = new BitVector(period + 1);
             int left = period, k;
             long sum = 0, mul = upper / period, mod = upper % period, counter;
 
@@ -703,6 +704,53 @@ namespace ProjectEuler.Solution
             }
 
             return GetSum(list, period).ToString();
+        }
+    }
+
+    /// <summary>
+    /// A set of disks numbered 1 through 100 are placed in a line in random order.
+    ///
+    /// What is the probability that we have a partial derangement such that exactly 22
+    /// prime number discs are found away from their natural positions?
+    /// (Any number of non-prime disks may also be found in or out of their natural
+    /// positions.)
+    ///
+    /// Give your answer rounded to 12 places behind the decimal point in the form
+    /// 0.abcdefghijkl.
+    /// </summary>
+    internal class Problem239 : Problem
+    {
+        private const int upper = 100;
+        private const int nFool = 22;
+
+        public Problem239() : base(239) { }
+
+        private BigInteger CountPartialDerangement(Derangement d, int total, int deranged)
+        {
+            // The probability of n deranged number containing 22 foolish primes is Fool/Total
+            BigInteger Total = Probability.CountCombinations(new BigInteger(total), deranged);
+            BigInteger Fool = Probability.CountCombinations(new BigInteger(total - nFool), deranged - nFool);
+            BigInteger sum = d[deranged];
+
+            return sum * Fool / Total;
+        }
+
+        protected override string Action()
+        {
+            BigInteger total = Probability.CountPermutations(new BigInteger(upper), upper), sum = 0, mul = 1;
+            var p = new Prime(upper);
+            Derangement d;
+
+            // Select foolish primes
+            p.GenerateAll();
+            mul = Probability.CountCombinations(new BigInteger(p.Nums.Count), nFool);
+
+            // Count Partial Derangement
+            d = new Derangement(upper - p.Nums.Count + nFool);
+            for (int i = nFool; i <= d.N; i++)
+                sum += CountPartialDerangement(d, d.N, i);
+
+            return Math.Round((double)(sum * mul) / ((double)total), 12).ToString();
         }
     }
 }
