@@ -330,4 +330,87 @@ namespace ProjectEuler.Solution
             return nums.Sum().ToString();
         }
     }
+
+    /// <summary>
+    /// Given the set {1,2,...,n}, we define f(n,k) as the number of its k-element
+    /// subsets with an odd sum of elements. For example, f(5,3) = 4, since the set
+    /// {1,2,3,4,5} has four 3-element subsets having an odd sum of elements, i.e.:
+    /// {1,2,4}, {1,3,5}, {2,3,4} and {2,4,5}.
+    ///
+    /// When all three values n, k and f(n,k) are odd, we say that they make an
+    /// odd-triplet [n,k,f(n,k)].
+    ///
+    /// There are exactly five odd-triplets with n <= 10, namely:
+    /// [1,1,f(1,1) = 1], [5,1,f(5,1) = 3], [5,5,f(5,5) = 1], [9,1,f(9,1) = 5] and
+    /// [9,9,f(9,9) = 1].
+    ///
+    /// How many odd-triplets are there with n <= 10^12 ?
+    /// </summary>
+    internal class Problem242 : Problem
+    {
+        private const long upper = 1000000000000;
+
+        public Problem242() : base(242) { }
+
+        private long GetSum(List<long> array, int row, long id)
+        {
+            long counter = 0, pow = Misc.Pow(2, row);
+
+            if (id <= 0)
+                throw new InvalidOperationException();
+
+            if (id > pow / 2)
+            {
+                counter = GetSum(array, row - 1, id - pow / 2) * 2;
+                counter += array[row - 1];
+            }
+            else if (id == pow / 2)
+            {
+                counter = array[row - 1];
+            }
+            else
+            {
+                counter = GetSum(array, row - 1, id);
+            }
+            counter += Misc.Pow(2, row - 1);
+
+            return counter;
+        }
+
+        protected override string Action()
+        {
+            /**
+             * Only when n = 4k+1 is valid:
+             * from 1, 5, ... 4k+1:
+             * calculate the number of odd-triplet when n = 1, 5, 9, ...
+             * 1, 2, 2, 4, 2, 4, 4, ...
+             * write the numbers in like:
+             * 1
+             * 2, 2
+             * 4, 2, 4, 4,
+             * 8, 2, 4, 4, 8, 4, 8, 8,
+             * 16,2, 4, 4, 8, 4, 8, 8, 16,4, 8, 8, 16,8,16,16,
+             */
+            var array = new List<long>() { 1 };
+            long counter = 0, left = (upper + 3) / 4;
+
+            for (long l = 1; l <= upper; l *= 2)
+                array.Add(array[array.Count - 1] * 3 + l);
+            for (int r = 0; left != 0; r++)
+            {
+                if (left >= Misc.Pow(2, r))
+                {
+                    counter += array[r];
+                    left -= Misc.Pow(2, r);
+                }
+                else
+                {
+                    counter += GetSum(array, r, left);
+                    break;
+                }
+            }
+
+            return counter.ToString();
+        }
+    }
 }
