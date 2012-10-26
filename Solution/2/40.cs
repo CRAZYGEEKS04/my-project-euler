@@ -413,4 +413,80 @@ namespace ProjectEuler.Solution
             return counter.ToString();
         }
     }
+
+    /// <summary>
+    /// A positive fraction whose numerator is less than its denominator is called a
+    /// proper fraction.
+    /// For any denominator, d, there will be d-1 proper fractions; for example, with
+    /// d = 12:
+    /// 1/12, 2/12, 3/12, 4/12, 5/12, 6/12, 7/12, 8/12, 9/12, 10/12, 11/12.
+    ///
+    /// We shall call a fraction that cannot be cancelled down a resilient fraction.
+    /// Furthermore we shall define the resilience of a denominator, R(d), to be the
+    /// ratio of its proper fractions that are resilient; for example, R(12) = 4/11.
+    /// In fact, d = 12 is the smallest denominator having a resilience R(d) < 4/10.
+    ///
+    /// Find the smallest denominator d, having a resilience R(d) < 15499/94744.
+    /// </summary>
+    internal class Problem243 : Problem
+    {
+        private const int numerator = 15499;// 4;
+        private const int denominator = 94744;// 10;
+
+        public Problem243() : base(243) { }
+
+        private void Calculate(List<int> p, ref long min, long n, long d, int id)
+        {
+            if (id == p.Count)
+                return;
+
+            n *= p[id] - 1;
+            d *= p[id];
+            if (d >= min)
+                return;
+            if (n * denominator < (d - 1) * numerator)
+            {
+                min = d;
+                return;
+            }
+            Calculate(p, ref min, n, d, id + 1);
+
+            while (d * p[id] < min)
+            {
+                n *= p[id];
+                d *= p[id];
+                if (n * denominator < (d - 1) * numerator)
+                {
+                    min = d;
+                    return;
+                }
+                Calculate(p, ref min, n, d, id + 1);
+            }
+        }
+
+        protected override string Action()
+        {
+            /**
+             * R(d) = phi(d)/(d-1) = phi(d)/d * d/(d-1) = (1-1/p1) * (1-1/p2) * ... * (1-1/pn) * d / (d-1)
+             */
+            var prime = new Prime(100);
+            long n = 1, d = 1;
+
+            // Calculate temporary minimal value of d by p1*p2*...*pn
+            prime.GenerateAll();
+            foreach (var p in prime)
+            {
+                n *= p - 1;
+                d *= p;
+                if (n * denominator < (d - 1) * numerator)
+                    break;
+            }
+            if (n * denominator >= (d - 1) * numerator)
+                throw new ArgumentException();
+
+            Calculate(prime.Nums, ref d, 1, 1, 0);
+
+            return d.ToString();
+        }
+    }
 }
