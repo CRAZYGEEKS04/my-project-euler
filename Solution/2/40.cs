@@ -489,4 +489,168 @@ namespace ProjectEuler.Solution
             return d.ToString();
         }
     }
+
+    /// <summary>
+    /// You probably know the game Fifteen Puzzle. Here, instead of numbered tiles, we
+    /// have seven red tiles and eight blue tiles.
+    ///
+    /// A move is denoted by the uppercase initial of the direction (Left, Right, Up,
+    /// Down) in which the tile is slid, e.g. starting from configuration (S), by the
+    /// sequence LULUR we reach the configuration (E):
+    ///
+    ///  (S)     (E)
+    ///  RBB    RRBB
+    /// RRBB    RBBB
+    /// RRBB    R RB
+    /// RRBB    RRBB
+    ///
+    /// For each path, its checksum is calculated by (pseudocode):
+    ///
+    /// checksum = 0
+    /// checksum = (checksum * 243 + m1) mod 100000007
+    /// checksum = (checksum * 243 + m2) mod 100000007
+    ///  …
+    /// checksum = (checksum * 243 + mn) mod 100000007
+    /// where mk is the ASCII value of the kth letter in the move sequence and the
+    /// ASCII values for the moves are:
+    ///
+    /// L  76
+    /// R  82
+    /// U  85
+    /// D  68
+    ///
+    /// For the sequence LULUR given above, the checksum would be 19761398.
+    ///
+    /// Now, starting from configuration (S), find all shortest ways to reach
+    /// configuration (T).
+    ///
+    ///  (S)     (T)
+    ///  RBB     BRB
+    /// RRBB    BRBR
+    /// RRBB    RBRB
+    /// RRBB    BRBR
+    ///
+    /// What is the sum of all checksums for the paths having the minimal length?
+    /// </summary>
+    internal class Problem244 : Problem
+    {
+        private static string source = " RBBRRBBRRBBRRBB";
+        private static string target = "RRBBRBBBR RBRRBB";
+
+        public Problem244() : base(244) { }
+
+        private struct State
+        {
+            public List<int> checksums;
+            public int state;
+            public int blank;
+
+            public State(int s, int b, int c)
+            {
+                checksums = new List<int>() { c };
+                state = s;
+                blank = b;
+            }
+
+            public State(int s, int b, IEnumerable<int> c)
+            {
+                checksums = new List<int>(c);
+                state = s;
+                blank = b;
+            }
+
+            public void AddChecksum(IEnumerable<int> c)
+            {
+                checksums.AddRange(c);
+            }
+        }
+
+        private State Parse(string text)
+        {
+            int ret = 0;
+            int blank = 0;
+
+            for (int i = 0; i < 16; i++)
+            {
+                switch (text[i])
+                {
+                    case 'R':
+                        ret |= (1 << (i * 2));
+                        break;
+                    case 'B':
+                        ret |= (2 << (i * 2));
+                        break;
+                    default:
+                        blank = i;
+                        break;
+                }
+            }
+
+            return new State(ret, blank, 0);
+        }
+
+        private void AddNextState(HashSet<int> visited, Dictionary<int, State> next, State current, char dir)
+        {
+            int nextblank = 0, newstate = current.state, value;
+
+            switch (dir)
+            {
+                case 'U': nextblank = current.blank + 4; break;
+                case 'D': nextblank = current.blank - 4; break;
+                case 'L': nextblank = current.blank + 1; break;
+                case 'R': nextblank = current.blank - 1; break;
+                default: throw new ArgumentException();
+            }
+
+            value = (newstate & (3 << nextblank)) >> nextblank;
+            newstate &= ~(3 << nextblank);
+            newstate |= value << current.blank;
+
+            if (visited.Contains(newstate))
+                return;
+
+            if (next.ContainsKey(newstate))
+                next[newstate].AddChecksum(current.checksums.Select(it => (it * 243 + dir) % 100000007));
+            else
+                next.Add(newstate, new State(newstate, nextblank, current.checksums.Select(it => (it * 243 + dir) % 100000007)));
+        }
+
+        private void AddNextStates(HashSet<int> visited, Dictionary<int, State> next, State current)
+        {
+            if (current.blank % 4 > 0)
+                AddNextState(visited, next, current, 'R');
+            if (current.blank % 4 < 3)
+                AddNextState(visited, next, current, 'L');
+            if (current.blank / 4 > 0)
+                AddNextState(visited, next, current, 'D');
+            if (current.blank / 4 < 3)
+                AddNextState(visited, next, current, 'U');
+        }
+
+        protected override string Action()
+        {
+            var visited = new HashSet<int>();
+            Dictionary<int, State> current, next;
+            int finishState = 0;
+
+            current = new Dictionary<int, State>();
+            current.Add(Parse(source).state, Parse(source));
+            visited.Add(Parse(source).state);
+            finishState = Parse(target).state;
+
+            while (true)
+            {
+                next = new Dictionary<int, State>();
+                foreach (var state in current.Values)
+                    AddNextStates(visited, next, state);
+                current = next;
+                foreach (var state in current.Values)
+                    visited.Add(state.state);
+                if (visited.Contains(finishState))
+                    break;
+            }
+
+            return current[finishState].checksums.Sum().ToString();
+        }
+    }
 }
