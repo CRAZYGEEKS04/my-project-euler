@@ -535,122 +535,126 @@ namespace ProjectEuler.Solution
     internal class Problem244 : Problem
     {
         private static string source = " RBBRRBBRRBBRRBB";
-        private static string target = "RRBBRBBBR RBRRBB";
+        private static string target = " BRBBRBRRBRBBRBR";
 
         public Problem244() : base(244) { }
 
-        private struct State
+        private class State
         {
-            public List<int> checksums;
-            public int state;
-            public int blank;
-
-            public State(int s, int b, int c)
+            public static State Parse(string text)
             {
-                checksums = new List<int>() { c };
-                state = s;
-                blank = b;
-            }
+                State ret = new State(0);
 
-            public State(int s, int b, IEnumerable<int> c)
-            {
-                checksums = new List<int>(c);
-                state = s;
-                blank = b;
-            }
-
-            public void AddChecksum(IEnumerable<int> c)
-            {
-                checksums.AddRange(c);
-            }
-        }
-
-        private State Parse(string text)
-        {
-            int ret = 0;
-            int blank = 0;
-
-            for (int i = 0; i < 16; i++)
-            {
-                switch (text[i])
+                for (int i = 0; i < 16; i++)
                 {
-                    case 'R':
-                        ret |= (1 << (i * 2));
-                        break;
-                    case 'B':
-                        ret |= (2 << (i * 2));
-                        break;
-                    default:
-                        blank = i;
-                        break;
+                    switch (text[i])
+                    {
+                        case 'R': ret.state |= (1 << i); break;
+                        case ' ': ret.state |= (i << 16); break;
+                        case 'B': break;
+                    }
                 }
+
+                return ret;
             }
 
-            return new State(ret, blank, 0);
-        }
+            public State Left;
+            public State Right;
+            public State Up;
+            public State Down;
+            public int state;
 
-        private void AddNextState(HashSet<int> visited, Dictionary<int, State> next, State current, char dir)
-        {
-            int nextblank = 0, newstate = current.state, value;
-
-            switch (dir)
+            public State(int state)
             {
-                case 'U': nextblank = current.blank + 4; break;
-                case 'D': nextblank = current.blank - 4; break;
-                case 'L': nextblank = current.blank + 1; break;
-                case 'R': nextblank = current.blank - 1; break;
-                default: throw new ArgumentException();
+                this.state = state;
             }
 
-            value = (newstate & (3 << nextblank)) >> nextblank;
-            newstate &= ~(3 << nextblank);
-            newstate |= value << current.blank;
+            private State NextMove(HashSet<int> visited, Dictionary<int, State> next, int blank, char dir)
+            {
+                int nextblank = 0, nextstate = state, value = 0;
 
-            if (visited.Contains(newstate))
-                return;
+                switch (dir)
+                {
+                    case 'U': nextblank = blank + 4; break;
+                    case 'D': nextblank = blank - 4; break;
+                    case 'L': nextblank = blank + 1; break;
+                    case 'R': nextblank = blank - 1; break;
+                }
+                value = (state & (1 << nextblank));
+                nextstate = (state & 0xFFFF);
+                nextstate &= ~(1 << blank);
+                nextstate &= ~(1 << nextblank);
+                if (value != 0)
+                    nextstate |= (1 << blank);
+                nextstate |= (nextblank << 16);
 
-            if (next.ContainsKey(newstate))
-                next[newstate].AddChecksum(current.checksums.Select(it => (it * 243 + dir) % 100000007));
-            else
-                next.Add(newstate, new State(newstate, nextblank, current.checksums.Select(it => (it * 243 + dir) % 100000007)));
+                if (visited.Contains(nextstate))
+                    return null;
+                if (!next.ContainsKey(nextstate))
+                    next.Add(nextstate, new State(nextstate));
+
+                return next[nextstate];
+            }
+
+            public void NextMoves(HashSet<int> visited, Dictionary<int, State> next)
+            {
+                int blank = (state >> 16);
+
+                if (blank % 4 > 0)
+                    Right = NextMove(visited, next, blank, 'R');
+                if (blank % 4 < 3)
+                    Left = NextMove(visited, next, blank, 'L');
+                if (blank / 4 > 0)
+                    Down = NextMove(visited, next, blank, 'D');
+                if (blank / 4 < 3)
+                    Up = NextMove(visited, next, blank, 'U');
+            }
         }
 
-        private void AddNextStates(HashSet<int> visited, Dictionary<int, State> next, State current)
+        private long GetCheckSum(State current, State end, long checksum)
         {
-            if (current.blank % 4 > 0)
-                AddNextState(visited, next, current, 'R');
-            if (current.blank % 4 < 3)
-                AddNextState(visited, next, current, 'L');
-            if (current.blank / 4 > 0)
-                AddNextState(visited, next, current, 'D');
-            if (current.blank / 4 < 3)
-                AddNextState(visited, next, current, 'U');
+            long sum = 0;
+
+            if (current.state == end.state)
+                return checksum;
+
+            if (current.Left != null)
+                sum += GetCheckSum(current.Left, end, (checksum * 243 + 'L') % 100000007);
+            if (current.Right != null)
+                sum += GetCheckSum(current.Right, end, (checksum * 243 + 'R') % 100000007);
+            if (current.Up != null)
+                sum += GetCheckSum(current.Up, end, (checksum * 243 + 'U') % 100000007);
+            if (current.Down != null)
+                sum += GetCheckSum(current.Down, end, (checksum * 243 + 'D') % 100000007);
+
+            return sum;
         }
 
         protected override string Action()
         {
             var visited = new HashSet<int>();
             Dictionary<int, State> current, next;
-            int finishState = 0;
+            State start, end;
 
             current = new Dictionary<int, State>();
-            current.Add(Parse(source).state, Parse(source));
-            visited.Add(Parse(source).state);
-            finishState = Parse(target).state;
+            start = State.Parse(source);
+            end = State.Parse(target);
+            current.Add(start.state, start);
+            visited.Add(start.state);
 
             while (true)
             {
                 next = new Dictionary<int, State>();
                 foreach (var state in current.Values)
-                    AddNextStates(visited, next, state);
+                    state.NextMoves(visited, next);
                 current = next;
                 foreach (var state in current.Values)
                     visited.Add(state.state);
-                if (visited.Contains(finishState))
+                if (visited.Contains(end.state))
                     break;
             }
 
-            return current[finishState].checksums.Sum().ToString();
+            return GetCheckSum(start, end, 0).ToString();
         }
     }
 }
