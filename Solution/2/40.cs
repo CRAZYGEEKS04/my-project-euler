@@ -657,4 +657,166 @@ namespace ProjectEuler.Solution
             return GetCheckSum(start, end, 0).ToString();
         }
     }
+
+    /// <summary>
+    /// We shall call a fraction that cannot be cancelled down a resilient fraction.
+    /// Furthermore we shall define the resilience of a denominator, R(d), to be the
+    /// ratio of its proper fractions that are resilient; for example, R(12) = 4⁄11.
+    ///
+    /// The resilience of a number d > 1 is then φ(d) / (d - 1), where φ is Euler's
+    /// totient function.
+    ///
+    /// We further define the coresilience of a number n > 1 as C(n) = (n - φ(n))
+    /// / (n - 1).
+    ///
+    /// The coresilience of a prime p is C(p) = 1 / (p - 1).
+    ///
+    /// Find the sum of all composite integers 1 < n < 2*10^11, for which C(n) is a
+    /// unit fraction.
+    /// </summary>
+    internal class Problem245 : Problem
+    {
+        private static long upper = 2 * Misc.Pow(10, 11);
+
+        public Problem245() : base(245) { }
+
+        private List<long> GetDivisors(List<long> ps)
+        {
+            List<long> ds = new List<long>() { 1 }, tmp = new List<long>();
+            long q = 1;
+
+            foreach (var p in ps)
+            {
+                if (p != q)
+                {
+                    tmp.Clear();
+                    tmp.AddRange(ds);
+                }
+                for (int i = 0; i < tmp.Count; i++)
+                    tmp[i] *= p;
+                ds.AddRange(tmp);
+                q = p;
+            }
+            ds.Sort();
+
+            return ds;
+        }
+
+        private long MultiPrime(Prime prime, long m, long phi, long q_min, long q_max)
+        {
+            long sum = 0, p_max = Math.Min(upper / m, m * m);
+            long k_min = (m * q_max - 1) / ((m - phi) * q_max + phi) + 1;
+            long k_max = Math.Min((m * p_max - 1) / ((m - phi) * p_max + phi), q_min - 1);
+
+            if (k_max < k_min)
+                return 0;
+
+            for (long k = k_min; k <= k_max; k++)
+            {
+                if ((k * phi + 1) % (m - k * (m - phi)) != 0)
+                    continue;
+
+                long q = (phi * k + 1) / (m - (m - phi) * k);
+
+                if (prime.IsPrime(q))
+                    sum += m * q;
+            }
+
+            int id = BinarySearch.SearchRight(prime.Nums, (int)q_max);
+            p_max = Misc.Sqrt(upper / m);
+            while (true)
+            {
+                int p = prime.Nums[id++];
+
+                if (p > p_max)
+                    break;
+                sum += MultiPrime(prime, m * p, phi * (p - 1), q_min, p);
+            }
+
+            return sum;
+        }
+
+        protected override string Action()
+        {
+            /**
+             * Proof n has to be squarefree when C(n) is a unit fraction:
+             * Let p be a prime dividing n with p^k the largest power dividing n.
+             * C(n) a unit fraction gives (n-1)/(n-phi) = m, an integer.
+             * p^(k-1) divides n and phi, so divides the denominator (and is the highest power of p to do so).
+             * Thus m integral implies p^(k-1) divides the numerator also.
+             * Since p^(k-1) divides n, it has to divide 1, so p^(k-1) = 1 and k = 1.
+             * n must be made up from square-free prime factors.
+             *
+             * n is square-free and odd, c(n)=1/k, k must be even
+             */
+            long v = (long)Math.Pow(upper, 2.0 / 3), w = Misc.Sqrt(upper);
+            long[] values = new long[w + 1];
+            List<long>[] factors = new List<long>[w + 1];
+            var prime = new Prime((int)v);
+            long sum = 0;
+
+            prime.GenerateAll();
+            for (long n = 0; n <= w; n++)
+            {
+                values[n] = n * (n - 1) + 1;
+                factors[n] = new List<long>();
+            }
+            for (int n = 2; n <= w; n += 3) // Sieve 3
+            {
+                for (; values[n] % 3 == 0; values[n] /= 3)
+                    factors[n].Add(3);
+            }
+            for (int n = 3; n <= w; n++)
+            {
+                long p = values[n];
+
+                if (p == 1)
+                    continue;
+                for (long m = n; m <= w; m += p)
+                {
+                    for (; values[m] % p == 0; values[m] /= p)
+                        factors[m].Add(p);
+                }
+                for (long m = p + 1 - n; m <= w; m += p)
+                {
+                    for (; values[m] % p == 0; values[m] /= p)
+                        factors[m].Add(p);
+                }
+            }
+
+            // Semi Primes
+            foreach (var p in prime.Nums.Skip(1))
+            {
+                if (p > w)
+                    break;
+                foreach (var d in GetDivisors(factors[p]))
+                {
+                    if (d > upper / p + p - 1)
+                        break;
+                    if (d <= 2 * p - 1)
+                        continue;
+                    if (prime.IsPrime(d - p + 1))
+                        sum += (d - p + 1) * p;
+                }
+            }
+
+            // Multi Primes
+            long q_min_max = (long)Math.Pow(upper, 1.0 / 3);
+
+            for (int mid = 1; prime.Nums[mid] < q_min_max; mid++)
+            {
+                int q_min = prime.Nums[mid];
+                long q_max = Misc.Sqrt(upper / q_min);
+
+                for (int qid = mid + 1; prime.Nums[qid] < q_max; qid++)
+                {
+                    int q = prime.Nums[qid];
+
+                    sum += MultiPrime(prime, q_min * q, (q_min - 1) * (q - 1), q_min, q);
+                }
+            }
+
+            return sum.ToString();
+        }
+    }
 }
