@@ -819,4 +819,144 @@ namespace ProjectEuler.Solution
             return sum.ToString();
         }
     }
+
+    /// <summary>
+    /// A definition for an ellipse is:
+    ///
+    /// Given a circle c with centre M and radius r and a point G such that d(G,M) < r,
+    /// the locus of the points that are equidistant from c and G form an ellipse.
+    /// The construction of the points of the ellipse is shown below.
+    ///
+    /// Given are the points M(-2000,1500) and G(8000,1500).
+    /// Given is also the circle c with centre M and radius 15000.
+    /// The locus of the points that are equidistant from G and c form an ellipse e.
+    /// From a point P outside e the two tangents t1 and t2 to the ellipse are drawn.
+    /// Let the points where t1 and t2 touch the ellipse be R and S.
+    ///
+    /// For how many lattice points P is angle RPS greater than 45 degrees?
+    /// </summary>
+    internal class Problem246 : Problem
+    {
+        public Problem246() : base(246) { }
+
+        private static double A = 7500, B = Math.Sqrt(5) * 2500;
+        private static double A45 = Math.PI / 4;
+
+        // compute angle of tangents given point x0, y0 outside
+        private static double Angle(double x0, double y0)
+        {
+            // testing Angle(10000, 8000);
+            // should be points {{7329.87, -1183.93}, {-2102.17, 5366.09}}
+            checked
+            {
+                double d2 = ((B * x0 / A) * (B * x0 / A) + y0 * y0);
+                double h = Math.Sqrt(d2 - B * B);
+                double x1 = (B * B * x0 + A * h * y0) / d2;
+                double x2 = (B * B * x0 - A * h * y0) / d2;
+                double y1 = (B * B * y0 - h * B * B * x0 / A) / d2;
+                double y2 = (B * B * y0 + h * B * B * x0 / A) / d2;
+
+                double dx1 = x1 - x0, dy1 = y1 - y0;
+                double dx2 = x2 - x0, dy2 = y2 - y0;
+
+                // compute two angles
+                double a1 = Math.Atan2(dy1, dx1);
+                double a2 = Math.Atan2(dy2, dx2);
+
+                // compute difference - rotate a2 to the x axis
+                // and normalize to [-180,180)
+                double ans = a1 - a2;
+                while (ans < Math.PI)
+                    ans += Math.PI * 2;
+                while (ans >= Math.PI)
+                    ans -= Math.PI * 2;
+
+                ans += Math.PI; //[0,360)
+
+                if (ans >= Math.PI)
+                    ans = 2 * Math.PI - ans; // [0,180)
+
+                // check cross product to see if we need ans or 180-ans
+                if (dx1 * dy2 < dx2 * dy1)
+                    ans = Math.PI - ans; // [0,90)
+
+                return ans;
+            }
+        }
+
+        // starting at x0, y0 a valid point, walk along x0 += dx until
+        // good = false, then back in one then from x0 > 0, y0, walk up
+        // and to left while inside = true until (and including) x0 = 0,
+        // then total lattice pointsinside region and return count.
+        // Assumes quadrant symmetric
+        private static long Walk(long x0, long y0, long dx, Func<long, long, bool> good)
+        {
+            long total = 0;
+
+            do
+            {
+                x0 += dx;
+            } while (good(x0, y0));
+            x0 -= dx; // start here
+            // x0,y0 good, now walk counterclockwise on boundary
+
+            long xstart = x0;
+            while (x0 >= 0)
+            {
+                while (good(x0, y0))
+                    y0++;
+                y0--; // back to good point
+                total += y0; // count part above x axis
+                //Console.WriteLine("{0},{1}", x0, y0);
+                x0--;
+            }
+            total -= y0; // remove y axis
+            total *= 4; // 4 quadrants
+            total += xstart * 2; // x axis minus 0,0
+            total += y0 * 2; // y axis minus 0,0
+            total += 1; // 0,0
+            return total;
+        }
+
+        private static long Count()
+        {
+            // start where angle is already good
+            long outside = Walk(7501, 0, 1,
+               (x, y) => Angle(x, y) > A45	// 45 degree bound
+               );
+
+            // start inside ellipse, count points in ellipse
+            long inside = Walk(5000, 0, 1,
+               (x, y) => B * B * x * x + A * A * y * y <= A * A * B * B // inside or on ellipse
+               );
+
+            return outside - inside;
+        }
+
+        protected override string Action()
+        {
+            /**
+             * 1) Find the equation for the ellipse. This is straight forward when we realize a point
+             * on the ellipse is the mid distance between G and the circle.
+             * (x-3000)^2 / 7500^2  +  (y-1500)^2 / (2500*sqrt(5))^2 = 1
+             *
+             * 2) Derivate and find the slope. This is not so straight forward and results in a kinda
+             * long equation for y given the point P. From the equation we get four solutions, only two
+             * of which are the tangent points. The correct solutions depend on the quadrant, where P
+             * lies relative to the ellipse.
+             *
+             * 3) The set of lattice points P that result in valid angles form a shape
+             * (bounded by -17450 < y < 20450 and -12440 < x < 18440). We count the number of points in this shape
+             * (we also include the points in the ellipse) by walking the edge. A small increase in x
+             * results in a small change in y and vice versa.
+             *
+             * 4) The final step is to count the number of points inside the ellipse and subtract the
+             * result from the result above.
+             *
+             * It is important to take care of the edge cases, that is the points (-4500,1500) and (10500,1500).
+             */
+
+            return Count().ToString();
+        }
+    }
 }
