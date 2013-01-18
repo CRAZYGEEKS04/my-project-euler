@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ProjectEuler.Common.Graph
 {
-    internal class PriorityQueue<TKey, TValue>
+    public class PriorityQueue<TKey, TValue>
     {
         private IEqualityComparer<TKey> kHelper;
         private IComparer<TValue> vHelper;

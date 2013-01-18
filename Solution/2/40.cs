@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ProjectEuler.Common;
+using ProjectEuler.Common.Graph;
 
 namespace ProjectEuler.Solution
 {
@@ -957,6 +958,99 @@ namespace ProjectEuler.Solution
              */
 
             return Count().ToString();
+        }
+    }
+
+    /// <summary>
+    /// Consider the region constrained by 1 <= x and 0 <= y <= 1/x.
+    ///
+    /// Let S1 be the largest square that can fit under the curve.
+    /// Let S2 be the largest square that fits in the remaining area, and so on.
+    /// Let the index of Sn be the pair (left, below) indicating the number of squares
+    /// to the left of Sn and the number of squares below Sn.
+    ///
+    /// The diagram shows some such squares labelled by number.
+    /// S2 has one square to its left and none below, so the index of S2 is (1,0).
+    /// It can be seen that the index of S32 is (1,1) as is the index of S50.
+    /// 50 is the largest n for which the index of Sn is (1,1).
+    ///
+    /// What is the largest n for which the index of Sn is (3,3)?
+    /// </summary>
+    internal class Problem247 : Problem
+    {
+        private const int left = 3;
+        private const int below = 3;
+
+        public Problem247() : base(247) { }
+
+        private class HyperbolaZone
+        {
+            public double xOffset;
+            public double yOffset;
+            public double x;
+            public double y;
+            public double size;
+            public int left;
+            public int below;
+
+            public HyperbolaZone(double xoff, double yoff, int left, int below)
+            {
+                var B = xoff - yoff;
+
+                this.xOffset = xoff;
+                this.yOffset = yoff;
+                this.left = left;
+                this.below = below;
+
+                this.x = (B + Math.Sqrt(B * B + 4)) / 2;
+                this.y = 1 / this.x;
+                this.size = this.x - this.xOffset;
+            }
+
+            public IEnumerable<HyperbolaZone> Split()
+            {
+                yield return new HyperbolaZone(xOffset, y, left, below + 1);
+                yield return new HyperbolaZone(x, yOffset, left + 1, below);
+            }
+        }
+
+        private class ReverseDoubleComparer : IComparer<double>
+        {
+            public int Compare(double x, double y)
+            {
+                return x.CompareTo(y) * -1;
+            }
+        }
+
+        protected override string Action()
+        {
+            /**
+             * for a hyperbola y=1/x where x>=a and y>=b, calculate the point of square upper-right point(x,y)
+             * the square split the area into two remaining zones where a1 = a, b1 = y and a2 = x, b2 = b
+             *
+             * x-a = y-b and y = 1/x
+             * x^2 - ax = 1 - bx => x^2 - (a-b)x - 1 = 0
+             * x = (a - b + sqrt((a-b)^2+4)) / 2
+             *
+             * also, there is C(n,2n) ways to get to index(n,n)
+             */
+            var queue = new PriorityQueue<HyperbolaZone, double>(VertexHelper.CreateSimpleHelper<HyperbolaZone>(), new ReverseDoubleComparer());
+            var start = new HyperbolaZone(1, 0, 0, 0);
+            int counter = 0, nTarget = 0, totalTarget = (int)Probability.CountCombinations(left + below, left);
+
+            queue.Add(start, start.size);
+            while (nTarget != totalTarget)
+            {
+                var zone = queue.ExtractMin().Key;
+
+                counter++;
+                if (zone.left == left && zone.below == below)
+                    nTarget++;
+                foreach (var tmp in zone.Split())
+                    queue.Add(tmp, tmp.size);
+            }
+
+            return counter.ToString();
         }
     }
 }
