@@ -3024,3 +3024,8 @@ The first number n for which φ(n)=13! is 6227180929.
 
 Find the 150,000th such number.
 ==========
+Let S = {2, 3, 5, ..., 4999} be the set of prime numbers less than 5000.
+
+Find the number of subsets of S, the sum of whose elements is a prime number.
+Enter the rightmost 16 digits as your answer.
+==========

@@ -1120,4 +1120,62 @@ namespace ProjectEuler.Solution
             return ret[index - 1].ToString();
         }
     }
+
+    /// <summary>
+    /// Let S = {2, 3, 5, ..., 4999} be the set of prime numbers less than 5000.
+    ///
+    /// Find the number of subsets of S, the sum of whose elements is a prime number.
+    /// Enter the rightmost 16 digits as your answer.
+    /// </summary>
+    internal class Problem249 : Problem
+    {
+        private static long modulo = Misc.Pow(10, 16);
+        private const int upper = 5000;
+
+        public Problem249() : base(249) { }
+
+        protected override string Action()
+        {
+            var primes = new Prime(upper * upper);
+            var dict = new Dictionary<long, long>();
+            long counter = 0;
+
+            primes.GenerateAll();
+            foreach (var p in primes)
+            {
+                if (p >= 5000)
+                    break;
+
+                var list = dict.ToList();
+
+                if (dict.ContainsKey(p))
+                    dict[p] += 1;
+                else
+                    dict.Add(p, 1);
+
+                foreach (var item in list)
+                {
+                    long key = item.Key + p;
+
+                    if (dict.ContainsKey(key))
+                    {
+                        dict[key] += item.Value;
+                        dict[key] %= modulo;
+                    }
+                    else
+                        dict.Add(key, item.Value);
+                }
+            }
+            foreach (var key in dict.Keys)
+            {
+                if (primes.IsPrime(key))
+                {
+                    counter += dict[key];
+                    counter %= modulo;
+                }
+            }
+
+            return counter.ToString();
+        }
+    }
 }
