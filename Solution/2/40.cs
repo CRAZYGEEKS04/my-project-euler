@@ -1137,8 +1137,8 @@ namespace ProjectEuler.Solution
         protected override string Action()
         {
             var primes = new Prime(upper * upper);
-            var dict = new Dictionary<long, long>();
-            long counter = 0;
+            long[] current = new long[upper * upper];
+            long counter = 0, sum = 0;
 
             primes.GenerateAll();
             foreach (var p in primes)
@@ -1146,31 +1146,19 @@ namespace ProjectEuler.Solution
                 if (p >= 5000)
                     break;
 
-                var list = dict.ToList();
-
-                if (dict.ContainsKey(p))
-                    dict[p] += 1;
-                else
-                    dict.Add(p, 1);
-
-                foreach (var item in list)
+                for (long tmp = sum; tmp >= 2; tmp--)
                 {
-                    long key = item.Key + p;
-
-                    if (dict.ContainsKey(key))
-                    {
-                        dict[key] += item.Value;
-                        dict[key] %= modulo;
-                    }
-                    else
-                        dict.Add(key, item.Value);
+                    current[tmp + p] += current[tmp];
+                    current[tmp + p] %= modulo;
                 }
+                current[p]++;
+                sum += p;
             }
-            foreach (var key in dict.Keys)
+            for (int i = 2; i <= sum; i++)
             {
-                if (primes.IsPrime(key))
+                if (primes.IsPrime(i))
                 {
-                    counter += dict[key];
+                    counter += current[i];
                     counter %= modulo;
                 }
             }
