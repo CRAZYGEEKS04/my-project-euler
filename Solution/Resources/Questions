@@ -3020,3 +3020,7 @@ It can be seen that the index of S32 is (1,1) as is the index of S50.
 
 What is the largest n for which the index of Sn is (3,3)?
 ==========
+The first number n for which φ(n)=13! is 6227180929.
+
+Find the 150,000th such number.
+==========

@@ -1053,4 +1053,71 @@ namespace ProjectEuler.Solution
             return counter.ToString();
         }
     }
+
+    /// <summary>
+    /// The first number n for which φ(n)=13! is 6227180929.
+    ///
+    /// Find the 150,000th such number.
+    /// </summary>
+    internal class Problem248 : Problem
+    {
+        private const int index = 150000;
+        private static long phi = Misc.Factorial(13);
+
+        public Problem248() : base(248) { }
+
+        private void Search(List<long> nums, List<long> primes, long n, long x, int id)
+        {
+            if (n == 1)
+            {
+                nums.Add(x);
+                return;
+            }
+            if (id == primes.Count || n < primes[id] - 1)
+                return;
+
+            long p = primes[id];
+
+            Search(nums, primes, n, x, id + 1);
+            if (n % (p - 1) == 0)
+            {
+                n /= (p - 1);
+                x *= p;
+                Search(nums, primes, n, x, id + 1);
+                while (n % p == 0)
+                {
+                    n /= p;
+                    x *= p;
+                    Search(nums, primes, n, x, id + 1);
+                }
+            }
+        }
+
+        protected override string Action()
+        {
+            /**
+             * if n = p1^a1 * p2^a2 * ... * pn^an
+             * phi(n) = p1^(a1-1)*(p1-1) * ... * pn^(an-1)*(pn-1) = 13!
+             *
+             * Find all p^a which p^(a-1)*(p-1) divides phi(n)
+             * http://www.numbertheory.org/php/carmichael.html
+             */
+            var primes = new Prime((int)Misc.Sqrt(phi) + 1);
+            var ret = new List<long>();
+            var validp = new List<long>();
+
+            primes.GenerateAll();
+            foreach (var divisor in Factor.GetDivisors(primes, phi))
+            {
+                if (primes.IsPrime(divisor + 1))
+                    validp.Add(divisor + 1);
+            }
+            validp = validp.Distinct().ToList();
+            validp.Sort();
+            Search(ret, validp, phi, 1, 0);
+            ret.Sort();
+
+            return ret[index - 1].ToString();
+        }
+    }
 }

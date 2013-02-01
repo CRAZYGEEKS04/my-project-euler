@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace ProjectEuler.Common
@@ -351,6 +352,32 @@ namespace ProjectEuler.Common
                 f *= 3;
             }
             GetMinimalSquareNumber(factors, 0, i * 2, nfactors, 1, 1, ref ret);
+
+            return ret;
+        }
+
+        public static List<long> GetDivisors(Prime primes, long n)
+        {
+            List<long> ret = new List<long>() { 1 };
+
+            foreach (var p in primes)
+            {
+                List<long> tmp = new List<long>(ret);
+                long tmpp = 1;
+
+                if (n == 1)
+                    break;
+                if (n % p != 0)
+                    continue;
+
+                while (n % p == 0)
+                {
+                    n /= p;
+                    tmpp *= p;
+                    tmp.AddRange(ret.Select(it => it * tmpp));
+                }
+                ret = tmp;
+            }
 
             return ret;
         }
