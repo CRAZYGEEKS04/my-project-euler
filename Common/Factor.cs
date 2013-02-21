@@ -367,6 +367,12 @@ namespace ProjectEuler.Common
 
                 if (n == 1)
                     break;
+                if (p * p > n)
+                {
+                    tmp.AddRange(ret.Select(it => it * n));
+                    ret = tmp;
+                    break;
+                }
                 if (n % p != 0)
                     continue;
 
