@@ -88,6 +88,7 @@ namespace ProjectEuler.Solution
             var p = new Prime(maxk);
             var counter = 0;
             long a, b, c, tmpb, tmpc;
+            double optb, optc;
 
             p.GenerateAll();
             for (int f = 2; f <= Misc.Sqrt(maxk * 8 - 3); f++)
@@ -106,19 +107,25 @@ namespace ProjectEuler.Solution
                 long maxc;
 
                 a = 3 * k - 1;
+                // Get optimal b and c by derivation
+                optb = Math.Exp(Math.Log(2.0 * k * k * (8 * k - 3)) / 3);
+                optc = optb / 2;
+
+                if (a + optb + optc > upper)
+                    break;
+
                 b = k;
                 c = 8 * k - 3;
-
                 if (sfc[k] != 0)
                 {
                     c = c / sfc[k] / sfc[k];
                     b *= sfc[k];
                 }
-                maxc = upper / c;
 
                 var factors = Factor.GetDivisors(p, b);
                 factors.Sort();
 
+                maxc = upper / c;
                 foreach (long f in factors)
                 {
                     if (f * f > maxc)
