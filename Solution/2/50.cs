@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ProjectEuler.Common;
+using ProjectEuler.Common.Miscellany;
 
 namespace ProjectEuler.Solution
 {
@@ -139,6 +140,55 @@ namespace ProjectEuler.Solution
             }
 
             return counter.ToString();
+        }
+    }
+
+    /// <summary>
+    /// Given a set of points on a plane, we define a convex hole to be a convex
+    /// polygon having as vertices any of the given points and not containing any of
+    /// the given points in its interior (in addition to the vertices, other given
+    /// points may lie on the perimeter of the polygon).
+    ///
+    /// As an example, the image below shows a set of twenty points and a few such
+    /// convex holes. The convex hole shown as a red heptagon has an area equal to
+    /// 1049694.5 square units, which is the highest possible area for a convex hole on
+    /// the given set of points.
+    ///
+    /// For our example, we used the first 20 points (T(2k-1), T(2k)), for k = 1,2,…,20,
+    /// produced with the pseudo-random number generator:
+    ///
+    /// S0 = 290797
+    /// S(n+1) = S(n)^2 mod 50515093
+    /// Tn = (Sn mod 2000) - 1000
+    /// i.e. (527, 144), (-488, 732), (-454, -947), …
+    ///
+    /// What is the maximum area for a convex hole on the set containing the first 500
+    /// points in the pseudo-random sequence?
+    /// Specify your answer including one digit after the decimal point.
+    /// </summary>
+    internal class Problem252 : Problem
+    {
+        private const int NPoints = 500;
+
+        public Problem252() : base(252) { }
+
+        private IEnumerable<int> GetNumbers()
+        {
+            long s = 290797;
+
+            while (true)
+            {
+                s = s * s % 50515093;
+                yield return (int)(s % 2000 - 1000);
+            }
+        }
+
+        protected override string Action()
+        {
+            var list = GetNumbers().Take(NPoints * 2).ToList();
+            var ch = new ConvexHoles();
+
+            return string.Format("{0:F1}", ch.Solve(list) / 2.0);
         }
     }
 }

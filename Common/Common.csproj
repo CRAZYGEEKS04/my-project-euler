@@ -50,6 +50,7 @@
     <Compile Include="Miscellany\BouncyNumber.cs" />
     <Compile Include="Miscellany\ContinuedFraction.cs" />
     <Compile Include="ExactCover\DancingLinks.cs" />
+    <Compile Include="Miscellany\ConvexHoles.cs" />
     <Compile Include="Miscellany\Derangement.cs" />
     <Compile Include="Miscellany\FareySequence.cs" />
     <Compile Include="Miscellany\GaussianCircle.cs" />
