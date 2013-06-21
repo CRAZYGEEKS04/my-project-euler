@@ -277,4 +277,121 @@ namespace ProjectEuler.Solution
             return string.Format("{0:F6}", (double)num / (double)dem);
         }
     }
+
+    /// <summary>
+    /// Define f(n) as the sum of the factorials of the digits of n. For example,
+    /// f(342) = 3! + 4! + 2! = 32.
+    ///
+    /// Define sf(n) as the sum of the digits of f(n). So sf(342) = 3 + 2 = 5.
+    ///
+    /// Define g(i) to be the smallest positive integer n such that sf(n) = i. Though
+    /// sf(342) is 5, sf(25) is also 5, and it can be verified that g(5) is 25.
+    ///
+    /// Define sg(i) as the sum of the digits of g(i). So sg(5) = 2 + 5 = 7.
+    ///
+    /// Further, it can be verified that g(20) is 267 and sum(sg(i)) for 1 <= i <= 20
+    /// is 156.
+    ///
+    /// What is sum( sg(i)) for 1 <= i <= 150?
+    /// </summary>
+    internal class Problem254 : Problem
+    {
+        public Problem254() : base(254) { }
+
+        private int sf(long x)
+        {
+            int s = 0;
+
+            while (x > 0)
+            {
+                s += (int)(x % 10);
+                x /= 10;
+            }
+
+            return s;
+        }
+
+        protected override string Action()
+        {
+            long[,] A = new long[151, 10];
+            long n, s, s1, s2, diff;
+            long[] p10 = new long[20], v = new long[10], w = new long[10];
+            int[] fact = new int[10];
+
+            /**
+             * It is true for all optimal solutions that the digit d appears at most d times in it if d!=9.
+             * Otherwise delete (d+1) of them and use one (d+1) digit, this works because d!*(d+1)=(d+1)!
+             * and we get a smaller number. It is not a proof for d=0, a similar proof works.
+             * Every positive integer is representable in exactly one way as n=sum(j=1,9,v[j]*j!),
+             * where v[j]<=j if j<9.
+             * It is more important that it is also true that n=d*10^(L-1)-i, where i<1000000, 0<d<10,
+             * and L<=18 for the problem.
+             */
+            fact[0] = 1;
+            p10[0] = 1;
+            for (int i = 1; i < 10; i++)
+                fact[i] = fact[i - 1] * i;
+            for (int i = 1; i < 20; i++)
+                p10[i] = 10 * p10[i - 1];
+            for (int i = 1; i <= 150; i++)
+            {
+                for (int j = 1; j < 10; j++)
+                    A[i, j] = (j == 9) ? p10[18] : 0;
+            }
+
+            for (int L = 1; L <= 18; L++)
+            {
+                for (int d = 1; d < 10; d++)
+                {
+                    for (int i = 0; i < 1000000; i++)
+                    {
+                        n = d * p10[L - 1] - i;
+                        if (n > 0)
+                        {
+                            s = sf(n);
+                            if (s <= 150)
+                            {
+                                for (int j = 9; j >= 1; j--)
+                                {
+                                    v[j] = n / fact[j];
+                                    n %= fact[j];
+                                }
+                                for (int j = 1; j < 10; j++) w[j] = A[s, j];
+
+                                s1 = 0;
+                                s2 = 0;
+                                for (int j = 1; j < 10; j++)
+                                {
+                                    s1 += v[j];
+                                    s2 += w[j];
+                                }
+                                diff = 0;
+                                if (s1 != s2) diff = s2 - s1;
+                                else
+                                {
+                                    for (int j = 1; j < 10; j++)
+                                        if (v[j] != w[j])
+                                        {
+                                            diff = v[j] - w[j];
+                                            break;
+                                        }
+                                }
+                                if (diff > 0)
+                                {
+                                    for (int j = 1; j < 10; j++)
+                                        A[s, j] = v[j];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            s = 0;
+            for (int i = 1; i <= 150; i++)
+                for (int j = 1; j < 10; j++)
+                    s += j * A[i, j];
+
+            return s.ToString();
+        }
+    }
 }
