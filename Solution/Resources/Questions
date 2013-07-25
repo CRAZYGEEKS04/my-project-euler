@@ -3099,3 +3099,61 @@ Further, it can be verified that g(20) is 267 and sum(sg(i)) for 1 <= i <= 20 is
 
 What is sum( sg(i)) for 1 <= i <= 150?
 ==========
+We define the rounded-square-root of a positive integer n as the square root of n rounded to the nearest integer.
+
+The following procedure (essentially Heron's method adapted to integer arithmetic) finds the rounded-square-root of n:
+
+Let d be the number of digits of the number n.
+If d is odd, set x(0) = 2*10^((d-1)/2).
+If d is even, set x(0) = 7*10^((d-2)/2).
+Repeat:
+
+    x(k+1) = f((x(k) + c(n/x(k)))/2)
+
+until x(k+1) = x(k).
+
+As an example, let us find the rounded-square-root of n = 4321.
+n has 4 digits, so x(0) = 7*10^((4-2)/2) = 70.
+x(1) = f((70 + c(4321/70)) / 2) = 66.
+x(2) = f((66 + c(4321/66)) / 2) = 66.
+Since x(2) = x(1), we stop here.
+So, after just two iterations, we have found that the rounded-square-root of 4321 is 66 (the actual square root is 65.7343137…).
+
+The number of iterations required when using this method is surprisingly low.
+For example, we can find the rounded-square-root of a 5-digit integer (10,000 <= n <= 99,999) with an average of 3.2102888889 iterations (the average value was rounded to 10 decimal places).
+
+Using the procedure described above, what is the average number of iterations required to find the rounded-square-root of a 14-digit number (10^13 <= n <= 10^14)?
+Give your answer rounded to 10 decimal places.
+
+Note: The symbols f(x) and c(x) represent the floor function and ceiling function respectively.
+==========
+Tatami are rectangular mats, used to completely cover the floor of a room, without overlap.
+
+Assuming that the only type of available tatami has dimensions 1*2, there are obviously some limitations for the shape and size of the rooms that can be covered.
+
+For this problem, we consider only rectangular rooms with integer dimensions a, b and even size s = a * b.
+We use the term 'size' to denote the floor surface area of the room, and — without loss of generality — we add the condition a <= b.
+
+There is one rule to follow when laying out tatami: there must be no points where corners of four different mats meet.
+For example, consider the two arrangements below for a 4*4 room:
+
+AABB    AACD
+CDDF    BBCD
+CEEF    EFGG
+GGHH    EFHH
+
+The arrangement on the left is acceptable, whereas the one on the right is not: a red "X" in the middle, marks the point where four tatami meet.
+
+Because of this rule, certain even-sized rooms cannot be covered with tatami: we call them tatami-free rooms.
+Further, we define T(s) as the number of tatami-free rooms of size s.
+
+The smallest tatami-free room has size s = 70 and dimensions 7*10.
+All the other rooms of size s = 70 can be covered with tatami; they are: 1*70, 2*35 and 5*14.
+Hence, T(70) = 1.
+
+Similarly, we can verify that T(1320) = 5 because there are exactly 5 tatami-free rooms of size s = 1320:
+20*66, 22*60, 24*55, 30*44 and 33*40.
+In fact, s = 1320 is the smallest room-size s for which T(s) = 5.
+
+Find the smallest room-size s for which T(s) = 200.
+==========
