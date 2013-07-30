@@ -253,5 +253,7 @@ Project Euler Problem Answers
 104924.0
 11.492847
 8184523820510
-255.Unknown
+Unknown.255
 85765680
+Unknown.257
+12747994

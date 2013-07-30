@@ -3157,3 +3157,12 @@ In fact, s = 1320 is the smallest room-size s for which T(s) = 5.
 
 Find the smallest room-size s for which T(s) = 200.
 ==========
+Unknown.257
+==========
+A sequence is defined as:
+
+g(k) = 1, for 0 <= k <= 1999
+g(k) = g(k-2000) + g(k-1999), for k >= 2000.
+
+Find g(k) mod 20092010 for k = 10^18.
+==========

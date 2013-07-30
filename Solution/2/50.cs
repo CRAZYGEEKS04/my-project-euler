@@ -538,4 +538,65 @@ namespace ProjectEuler.Solution
             return null;
         }
     }
+
+    internal class Problem257 : Problem
+    {
+        public Problem257() : base(257) { }
+
+        protected override string Action()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// A sequence is defined as:
+    ///
+    /// g(k) = 1, for 0 <= k <= 1999
+    /// g(k) = g(k-2000) + g(k-1999), for k >= 2000.
+    ///
+    /// Find g(k) mod 20092010 for k = 10^18.
+    /// </summary>
+    internal class Problem258 : Problem
+    {
+        private static long upper = Misc.Pow(10, 18);
+        private const int modulo = 20092010;
+        private const int size = 2000;
+
+        public Problem258() : base(258) { }
+
+        protected override string Action()
+        {
+            /**
+             * http://math.stackexchange.com/questions/91173/recurrence-for-a-lagged-fibonacci-sequence
+             *
+             * Use matrix:
+             *   [g(1), ..., g(2000)] = M * [g(0), ..., g(1999)]
+             *   [g(n), ..., g(n+1999)] = M^n * [g(0), ..., g(1999)]
+             *   where M is [0, 1, ..., 0, 0,
+             *               0, 0, 1, ..., 0,
+             *               ...
+             *               1, 1, 0, ..., 0]
+             */
+            long[] start = new long[size];
+            long[] matrix = new long[size * size];
+            SmallMatrix s, m, r;
+
+            for (int i = 0; i < size; i++)
+            {
+                start[i] = 1;
+                if (i != size - 1)
+                    matrix[i * size + i + 1] = 1;
+                else
+                    matrix[i * size] = matrix[i * size + 1] = 1;
+            }
+            s = new SmallMatrix(start, size, 1);
+            m = new SmallMatrix(matrix, size, size);
+
+            m = SmallMatrix.ModPow(m, upper, modulo);
+            r = m * s;
+
+            return r[0, 0].ToString();
+        }
+    }
 }
