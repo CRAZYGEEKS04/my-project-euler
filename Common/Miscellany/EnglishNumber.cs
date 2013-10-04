@@ -8,8 +8,10 @@ namespace ProjectEuler.Common.Miscellany
         private static string[] To19 = new string[] { "zero", "one", "two", "three", "four",
             "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen",
             "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" };
+
         private static string[] Tens = new string[] { "twenty", "thirty", "forty", "fifty",
             "sixty", "seventy", "eighty", "ninety" };
+
         private static string[] Denom = new string[] { "", "thousand", "million", "billion",
             "trillion", "quadrillion", "quintillion", "sextillion", "septillion", "octillion",
             "nonillion", "decillion", "undecillion", "duodecillion", "tredecillion",
