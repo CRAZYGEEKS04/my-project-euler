@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading.Tasks;
 using ProjectEuler.Common;
 using ProjectEuler.Common.Miscellany;
 
@@ -597,6 +598,78 @@ namespace ProjectEuler.Solution
             r = m * s;
 
             return r[0, 0].ToString();
+        }
+    }
+
+    /// <summary>
+    /// A positive integer will be called reachable if it can result from an arithmetic
+    /// expression obeying the following rules:
+    ///
+    /// Uses the digits 1 through 9, in that order and exactly once each.
+    /// Any successive digits can be concatenated (for example, using the digits 2, 3
+    /// and 4 we obtain the number 234).
+    /// Only the four usual binary arithmetic operations (addition, subtraction,
+    /// multiplication and division) are allowed.
+    /// Each operation can be used any number of times, or not at all.
+    /// Unary minus is not allowed.
+    /// Any number of (possibly nested) parentheses may be used to define the order of
+    /// operations.
+    /// For example, 42 is reachable, since (1/23) * ((4*5)-6) * (78-9) = 42.
+    ///
+    /// What is the sum of all positive reachable integers?
+    /// </summary>
+    internal class Problem259 : Problem
+    {
+        private const string numbers = "123456789";
+
+        public Problem259() : base(259) { }
+
+        private void Intersect(HashSet<SmallFraction> target, HashSet<SmallFraction> left, HashSet<SmallFraction> right)
+        {
+            foreach (var l in left)
+            {
+                foreach (var r in right)
+                {
+                    target.Add(l + r);
+                    target.Add(l - r);
+                    target.Add(l * r);
+                    if (r != 0)
+                        target.Add(l / r);
+                }
+            }
+        }
+
+        private HashSet<SmallFraction> Calculate(Dictionary<string, HashSet<SmallFraction>> dict, string digits)
+        {
+            HashSet<SmallFraction> ret = new HashSet<SmallFraction>();
+
+            if (dict.ContainsKey(digits))
+                return dict[digits];
+
+            ret.Add(int.Parse(digits));
+            if (digits.Length > 1)
+            {
+                for (int i = 1; i < digits.Length; i++)
+                    Intersect(ret, Calculate(dict, digits.Substring(0, i)), Calculate(dict, digits.Substring(i)));
+            }
+            dict.Add(digits, ret);
+
+            return ret;
+        }
+
+        protected override string Action()
+        {
+            var dict = new Dictionary<string, HashSet<SmallFraction>>();
+            long sum = 0;
+
+            Calculate(dict, numbers);
+            foreach (var value in dict[numbers])
+            {
+                if (value.Denominator == 1 && value.Numerator > 0)
+                    sum += value.Numerator;
+            }
+
+            return sum.ToString();
         }
     }
 }

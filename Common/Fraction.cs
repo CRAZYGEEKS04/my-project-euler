@@ -15,6 +15,12 @@ namespace ProjectEuler.Common
         {
             BigInteger factor;
 
+            if (denominator < 0)
+            {
+                denominator *= -1;
+                numerator *= -1;
+            }
+
             if (numerator >= 0)
                 factor = Factor.GetCommonFactor(numerator, denominator);
             else
