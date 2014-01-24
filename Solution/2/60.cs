@@ -180,4 +180,74 @@ namespace ProjectEuler.Solution
             return sum.ToString();
         }
     }
+
+    /// <summary>
+    /// Let us call a positive integer k a square-pivot, if there is a pair of integers
+    /// m > 0 and n >= k, such that the sum of the (m+1) consecutive squares up to k
+    /// equals the sum of the m consecutive squares from (n+1) on:
+    ///
+    /// (k-m)^2 + ... + k^2 = (n+1)^2 + ... + (n+m)^2.
+    /// Some small square-pivots are
+    ///
+    /// 4: 3^2 + 4^2 = 5^2
+    /// 21: 20^2 + 21^2 = 29^2
+    /// 24: 21^2 + 22^2 + 23^2 + 24^2 = 25^2 + 26^2 + 27^2
+    /// 110: 108^2 + 109^2 + 110^2 = 133^2 + 134^2
+    /// Find the sum of all distinct square-pivots <= 10^10.
+    /// </summary>
+    internal class Problem261 : Problem
+    {
+        private const long upper = 10000000000;
+
+        public Problem261() : base(261) { }
+
+        private bool Func(ref UInt64 sum, HashSet<UInt64> s, UInt64 m, UInt64 a, UInt64 b, UInt64 c)
+        {
+            UInt64 k = (4 * m + 2) * a - 2 * m * m - b, nextm = a + c - 1;
+
+            if (k > upper)
+                return a > m;
+            if (s.Add(k))
+                sum += k;
+            c += k + a - m;
+            if (a > m)
+                Func(ref sum, s, nextm, c - 1, a, k + 1);
+
+            return Func(ref sum, s, m, k, a, c);
+        }
+
+        protected override string Action()
+        {
+            /*
+            Binary tree like structure from xsd's post
+            + m=1 -    4,    5
+            |         21,   29 => m= 8*-    (28,  22)
+            |                               820, 862 => m=49#-   (861,    821)
+            |                                                  165648, 167281
+            |                                                      ......
+            |                             27724,29398
+            |                             ......
+            |        120,  169 => m=49#-  (168,   121)
+            |                            28441, 28681
+            |                               ......
+            |        697,  985 =>m=288%-  (984,    698)
+            |                            969528, 970922
+            |                               ......
+            |         .....
+            + m=2 -   12,   13
+            |        110,  133 => m=24*-  (132,    111)
+            |                             11772,  11991
+            |       1080, 1321
+            |         .....
+            + m=3 -   .....
+            */
+            HashSet<UInt64> s = new HashSet<UInt64>();
+            UInt64 sum = 0, m = 1;
+
+            while (Func(ref sum, s, m, m, 0, 1))
+                m++;
+
+            return sum.ToString();
+        }
+    }
 }
