@@ -250,4 +250,83 @@ namespace ProjectEuler.Solution
             return sum.ToString();
         }
     }
+
+    internal class Problem262 : Problem
+    {
+        public Problem262() : base(262) { }
+
+        protected override string Action()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// Consider the number 6. The divisors of 6 are: 1,2,3 and 6.
+    /// Every number from 1 up to and including 6 can be written as a sum of distinct
+    /// divisors of 6:
+    /// 1=1, 2=2, 3=1+2, 4=1+3, 5=2+3, 6=6.
+    /// A number n is called a practical number if every number from 1 up to and
+    /// including n can be expressed as a sum of distinct divisors of n.
+    ///
+    /// A pair of consecutive prime numbers with a difference of six is called a sexy
+    /// pair (since "sex" is the Latin word for "six"). The first sexy pair is (23,
+    /// 29).
+    ///
+    /// We may occasionally find a triple-pair, which means three consecutive sexy
+    /// prime pairs, such that the second member of each pair is the first member of
+    /// the next pair.
+    ///
+    /// We shall call a number n such that :
+    ///
+    /// (n-9, n-3), (n-3,n+3), (n+3, n+9) form a triple-pair, and
+    /// the numbers n-8, n-4, n, n+4 and n+8 are all practical,
+    /// an engineers’ paradise.
+    /// Find the sum of the first four engineers’ paradises.
+    /// </summary>
+    internal class Problem263 : Problem
+    {
+        private const int upper = 100000000;
+        private const int required = 4;
+
+        public Problem263() : base(263) { }
+
+        private bool IsParadise(Prime p, long num)
+        {
+            return Factor.IsPracticalNumber(p, num - 8) && Factor.IsPracticalNumber(p, num - 4) && Factor.IsPracticalNumber(p, num)
+                && Factor.IsPracticalNumber(p, num + 4) && Factor.IsPracticalNumber(p, num + 8);
+        }
+
+        protected override string Action()
+        {
+            var prime = new Prime(upper);
+            long ret = 0, prev = 3;
+            int counter = 0, ncounter = 0, step = 4;
+
+            // http://en.wikipedia.org/wiki/Practical_number
+            prime.GenerateAll();
+            for (long num = 5; ; num += step)
+            {
+                step = 6 - step;
+                if (prime.IsPrime(num))
+                {
+                    counter++;
+                    if (num - prev != 6)
+                        counter = 0;
+                    prev = num;
+                    if (counter >= 3)
+                    {
+                        if (IsParadise(prime, num - 9))
+                        {
+                            ret += num - 9;
+                            if (++ncounter == required)
+                                break;
+                        }
+                    }
+                }
+            }
+
+            return ret.ToString();
+        }
+    }
 }

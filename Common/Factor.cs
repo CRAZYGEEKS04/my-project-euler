@@ -387,5 +387,32 @@ namespace ProjectEuler.Common
 
             return ret;
         }
+
+        public static bool IsPracticalNumber(Prime primes, long n)
+        {
+            long theta = 1;
+
+            foreach (var p in primes)
+            {
+                if (n == 1)
+                    return true;
+                if (n % p != 0)
+                    continue;
+
+                if (p > theta + 1)
+                    return false;
+                while (n % p == 0)
+                {
+                    theta *= p;
+                    n /= p;
+                }
+                theta *= p;
+                theta /= p - 1;
+                if (n <= primes.Upper && primes.Contains((int)n))
+                    return n <= theta + 1;
+            }
+
+            return false;
+        }
     }
 }
