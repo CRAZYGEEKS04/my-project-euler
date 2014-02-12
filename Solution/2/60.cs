@@ -293,40 +293,54 @@ namespace ProjectEuler.Solution
 
         private bool IsParadise(Prime p, long num)
         {
-            return Factor.IsPracticalNumber(p, num - 8) && Factor.IsPracticalNumber(p, num - 4) && Factor.IsPracticalNumber(p, num)
+            return p.IsPrime(num - 9) && !p.IsPrime(num - 7) && !p.IsPrime(num - 5) && p.IsPrime(num - 3) && !p.IsPrime(num - 1)
+                && !p.IsPrime(num + 1) && p.IsPrime(num + 3) && !p.IsPrime(num + 5) && !p.IsPrime(num + 7) && p.IsPrime(num + 9)
+                && Factor.IsPracticalNumber(p, num - 8) && Factor.IsPracticalNumber(p, num - 4) && Factor.IsPracticalNumber(p, num)
                 && Factor.IsPracticalNumber(p, num + 4) && Factor.IsPracticalNumber(p, num + 8);
         }
 
         protected override string Action()
         {
             var prime = new Prime(upper);
-            long ret = 0, prev = 3;
-            int counter = 0, ncounter = 0, step = 4;
+            long sum = 0;
+            int ncounter = 0;
 
-            // http://en.wikipedia.org/wiki/Practical_number
+            /**
+             * http://en.wikipedia.org/wiki/Practical_number
+             * If n is a "paradise" number, n-4 and n+4 cannot be divisible by 5 or 7
+             * (because n-9, n-3, n+3, and n+9 are prime).  Thus, to be practical,
+             * n-4 and n+4 must be disible by 8.  n cannot be divisible by 3; it is
+             * divisible by 4 (but not 8) and by 5.  So n = 20 + 40j
+             *
+             * n-8 and n+8 are also divisible by 4 but not 8; they must be divisible
+             * either by 3 or by 7.  This leaves the following two possibilities:
+             * the remainders when n is divided by
+             * 3 and 7 are
+             * 1 and 1
+             * 2 and 6
+             * respectively.
+             * Combining that with n = 20 + 40j we get
+             *
+             * n = 20 + 1680k or n = -20 + 1680k
+             */
             prime.GenerateAll();
-            for (long num = 5; ; num += step)
+            for (long num = 1680; ; num += 1680)
             {
-                step = 6 - step;
-                if (prime.IsPrime(num))
+                if (IsParadise(prime, num - 20))
                 {
-                    counter++;
-                    if (num - prev != 6)
-                        counter = 0;
-                    prev = num;
-                    if (counter >= 3)
-                    {
-                        if (IsParadise(prime, num - 9))
-                        {
-                            ret += num - 9;
-                            if (++ncounter == required)
-                                break;
-                        }
-                    }
+                    sum += num - 20;
+                    if (++ncounter == required)
+                        break;
+                }
+                if (IsParadise(prime, num + 20))
+                {
+                    sum += num + 20;
+                    if (++ncounter == required)
+                        break;
                 }
             }
 
-            return ret.ToString();
+            return sum.ToString();
         }
     }
 }
