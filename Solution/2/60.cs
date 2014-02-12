@@ -343,4 +343,115 @@ namespace ProjectEuler.Solution
             return sum.ToString();
         }
     }
+
+    internal class Problem264 : Problem
+    {
+        public Problem264() : base(264) { }
+
+        protected override string Action()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// 2^N binary digits can be placed in a circle so that all the N-digit clockwise
+    /// subsequences are distinct.
+    ///
+    /// For N=3, two such circular arrangements are possible, ignoring rotations:
+    ///
+    /// 00010111    00011101
+    ///
+    /// For the first arrangement, the 3-digit subsequences, in clockwise order, are:
+    /// 000, 001, 010, 101, 011, 111, 110 and 100.
+    ///
+    /// Each circular arrangement can be encoded as a number by concatenating the
+    /// binary digits starting with the subsequence of all zeros as the most
+    /// significant bits and proceeding clockwise. The two arrangements for N=3 are
+    /// thus represented as 23 and 29:
+    ///
+    /// 00010111 = 23
+    /// 00011101 = 29
+    /// Calling S(N) the sum of the unique numeric representations, we can see that
+    /// S(3) = 23 + 29 = 52.
+    ///
+    /// Find S(5).
+    /// </summary>
+    internal class Problem265 : Problem
+    {
+        private const int nDigits = 5;
+        private static int length = (int)Misc.Pow(2, nDigits);
+
+        public Problem265() : base(265) { }
+
+        private bool IsBinaryCircle(int[] numbers)
+        {
+            bool[] flags = new bool[length];
+            int n = 0;
+
+            for (int i = 0; i < nDigits; i++)
+            {
+                n <<= 1;
+                n += numbers[i];
+            }
+            for (int i = nDigits; i < length; i++)
+            {
+                n <<= 1;
+                n += numbers[i];
+                n &= (length - 1);
+                if (flags[n])
+                    return false;
+                flags[n] = true;
+            }
+
+            return true;
+        }
+
+        private int GetNumber(int[] numbers)
+        {
+            int ret = 0;
+
+            foreach (var digit in numbers.Take(length))
+            {
+                ret <<= 1;
+                ret += digit;
+            }
+
+            return ret;
+        }
+
+        protected override string Action()
+        {
+            int[] digits = new int[length + nDigits];
+            int freeSlot = length - nDigits * 2;
+            var numbers = new HashSet<int>();
+            long sum = 0;
+
+            /**
+             * There must be a sequence of 1s and 0s of length 5, assuming there is
+             * five leading 0s, loop through the position of five 1s.
+             */
+            foreach (var posArray in Itertools.Combinations(Itertools.Range(nDigits, nDigits + freeSlot - 1), freeSlot / 2))
+            {
+                for (int pos = nDigits; pos <= length - nDigits + 1; pos++)
+                {
+                    for (int i = nDigits; i < length; i++)
+                        digits[i] = 1;
+                    foreach (var pos1 in posArray)
+                    {
+                        if (pos1 < pos)
+                            digits[pos1] = 0;
+                        else
+                            digits[pos1 + nDigits] = 0;
+                    }
+                    if (IsBinaryCircle(digits))
+                        numbers.Add(GetNumber(digits));
+                }
+            }
+            foreach (var num in numbers)
+                sum += num;
+
+            return sum.ToString();
+        }
+    }
 }

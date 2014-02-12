@@ -20,6 +20,12 @@ namespace ProjectEuler.Common
             }
         }
 
+        public static IEnumerable<int> Repeat(int number, int counter)
+        {
+            for (int i = 0; i < counter; i++)
+                yield return number;
+        }
+
         public static IEnumerable<T> Concatenate<T>(params IEnumerable<T>[] enumerables)
         {
             foreach (var enumerable in enumerables)
