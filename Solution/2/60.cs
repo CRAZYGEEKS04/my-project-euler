@@ -454,4 +454,73 @@ namespace ProjectEuler.Solution
             return sum.ToString();
         }
     }
+
+    /// <summary>
+    /// The divisors of 12 are: 1,2,3,4,6 and 12.
+    /// The largest divisor of 12 that does not exceed the square root of 12 is 3.
+    /// We shall call the largest divisor of an integer n that does not exceed the
+    /// square root of n the pseudo square root (PSR) of n.
+    /// It can be seen that PSR(3102)=47.
+    ///
+    /// Let p be the product of the primes below 190.
+    /// Find PSR(p) mod 10^16.
+    /// </summary>
+    internal class Problem266 : Problem
+    {
+        private const int upper = 190;
+
+        public Problem266() : base(266) { }
+
+        private SortedSet<BigInteger> GeneratePossibleFactors(List<int> primes)
+        {
+            SortedSet<BigInteger> set = new SortedSet<BigInteger>() { 1 };
+
+            foreach (var p in primes)
+            {
+                foreach (var f in set.ToList())
+                    set.Add(f * p);
+            }
+
+            return set;
+        }
+
+        private BigInteger SearchPSR(List<BigInteger> set1, List<BigInteger> set2, BigInteger sqrt)
+        {
+            BigInteger n, max = 1;
+
+            for (int p1 = 0, p2 = set2.Count - 1; p1 < set1.Count && p2 >= 0; )
+            {
+                n = set1[p1] * set2[p2];
+                if (n > sqrt)
+                {
+                    p2--;
+                }
+                else
+                {
+                    p1++;
+                    if (n > max)
+                        max = n;
+                }
+            }
+
+            return max;
+        }
+
+        protected override string Action()
+        {
+            var prime = new Prime(upper);
+            BigInteger number = 1, sqrt, max = 1;
+            SortedSet<BigInteger> set1, set2;
+
+            prime.GenerateAll();
+            foreach (var p in prime)
+                number *= p;
+            sqrt = Misc.Sqrt(number);
+            set1 = GeneratePossibleFactors(prime.Nums.Take(prime.Nums.Count / 2).ToList());
+            set2 = GeneratePossibleFactors(prime.Nums.Skip(prime.Nums.Count / 2).ToList());
+            max = SearchPSR(set1.ToList(), set2.ToList(), sqrt);
+
+            return (max % BigInteger.Pow(10, 16)).ToString();
+        }
+    }
 }
