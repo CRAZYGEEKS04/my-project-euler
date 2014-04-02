@@ -523,4 +523,74 @@ namespace ProjectEuler.Solution
             return (max % BigInteger.Pow(10, 16)).ToString();
         }
     }
+
+    /// <summary>
+    /// You are given a unique investment opportunity.
+    ///
+    /// Starting with £1 of capital, you can choose a fixed proportion, f, of your
+    /// capital to bet on a fair coin toss repeatedly for 1000 tosses.
+    ///
+    /// Your return is double your bet for heads and you lose your bet for tails.
+    ///
+    /// For example, if f = 1/4, for the first toss you bet £0.25, and if heads comes
+    /// up you win £0.5 and so then have £1.5. You then bet £0.375 and if the second
+    /// toss is tails, you have £1.125.
+    ///
+    /// Choosing f to maximize your chances of having at least £1,000,000,000 after
+    /// 1,000 flips, what is the chance that you become a billionaire?
+    ///
+    /// All computations are assumed to be exact (no rounding), but give your answer
+    /// rounded to 12 digits behind the decimal point in the form 0.abcdefghijkl.
+    /// </summary>
+    internal class Problem267 : Problem
+    {
+        private const int steps = 1000;
+        private const double fstep = 0.0001;
+
+        public Problem267() : base(267) { }
+
+        private int CalcualteN(double f)
+        {
+            double n = (9 - steps * Math.Log10(1 - f)) / (Math.Log10(1 + 2 * f) - Math.Log10(1 - f));
+
+            return (int)Math.Ceiling(n);
+        }
+
+        private int CalculateMinimalN(double lower, double upper)
+        {
+            int n = steps, tmp;
+
+            for (double f = lower + fstep; f < upper; f += fstep)
+            {
+                tmp = CalcualteN(f);
+                if (tmp < n)
+                    n = tmp;
+            }
+
+            return n;
+        }
+
+        protected override string Action()
+        {
+            /**
+             * http://en.wikipedia.org/wiki/Binomial_options_pricing_model
+             *
+             * for n heads, the expected money will be 1 * (1+2f)^n * (1-f)^(1000-n)
+             * to be a billionaire:
+             * (1+2f)^n * (1-f)^(1000-n) >= 1000000000
+             * n*lg(1+2f) + (1000-n)*lg(1-f) >= 9
+             * n*(lg(1+2f) - lg(1-f)) >= 9 - 1000*lg(1-f)
+             * n >= (9 - 1000*lg(1-f)) / (lg(1+2f) - lg(1-f))
+             * We need minimal n for maximal probability to become a billionaire
+             */
+            BigInteger total, sum = 0;
+            int n = CalculateMinimalN(0, 1);
+
+            total = BigInteger.Pow(2, steps);
+            for (BigInteger i = n; i <= steps; i++)
+                sum += Probability.CountCombinations(steps, i);
+
+            return Math.Round((double)sum / (double)total, 12).ToString();
+        }
+    }
 }
