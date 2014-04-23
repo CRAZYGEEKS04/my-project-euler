@@ -593,4 +593,60 @@ namespace ProjectEuler.Solution
             return Math.Round((double)sum / (double)total, 12).ToString();
         }
     }
+
+    /// <summary>
+    /// It can be verified that there are 23 positive integers less than 1000 that are
+    /// divisible by at least four distinct primes less than 100.
+    ///
+    /// Find how many positive integers less than 10^16 are divisible by at least four
+    /// distinct primes less than 100.
+    /// </summary>
+    internal class Problem268 : Problem
+    {
+        private static long upper = Misc.Pow(10, 16);
+
+        public Problem268() : base(268) { }
+
+        private void Calculate(List<int> primes, long[] counter, long factor, int nPrimeFactors, int id)
+        {
+            if (factor >= upper)
+                return;
+
+            counter[nPrimeFactors] += (upper - 1) / factor;
+            for (int i = id; i < primes.Count; i++)
+                Calculate(primes, counter, factor * primes[i], nPrimeFactors + 1, i + 1);
+        }
+
+        protected override string Action()
+        {
+            var prime = new Prime(100);
+            long sum = 0;
+            long[] multi, counter;
+
+            prime.GenerateAll();
+            multi = new long[prime.Nums.Count + 1];
+            counter = new long[prime.Nums.Count + 1];
+            /**
+            * for any number divisible by a,b,c,d,e. it's counted by C(5,4) = 5 times for four prime factors,
+            * so need to be subtracted C(5,4)-1 = 4 times.
+            * for any number divisible by a,b,c,d,e,f. it's counted for C(6,4) - (C(5,4)-1)*C(6,5) = -9 times,
+            * so need to be plused 10 times. Calculate multi time array for n factors
+            */
+            multi[4] = 1;
+            for (int n = 5; n <= prime.Nums.Count; n++)
+            {
+                long tmp = 0;
+
+                for (int i = 4; i < n; i++)
+                    tmp += multi[i] * Probability.CountCombinations(n, i);
+                multi[n] = 1 - tmp;
+            }
+            for (int i = 0; i < prime.Nums.Count; i++)
+                Calculate(prime.Nums, counter, prime.Nums[i], 1, i + 1);
+            for (int i = 0; i < multi.Length; i++)
+                sum += multi[i] * counter[i];
+
+            return sum.ToString();
+        }
+    }
 }
