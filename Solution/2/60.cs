@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -647,6 +648,135 @@ namespace ProjectEuler.Solution
                 sum += multi[i] * counter[i];
 
             return sum.ToString();
+        }
+    }
+
+    /// <summary>
+    /// A root or zero of a polynomial P(x) is a solution to the equation P(x) = 0.
+    /// Define Pn as the polynomial whose coefficients are the digits of n.
+    /// For example, P5703(x) = 5*x^3 + 7*x^2 + 3.
+    ///
+    /// We can see that:
+    /// Pn(0) is the last digit of n,
+    /// Pn(1) is the sum of the digits of n,
+    /// Pn(10) is n itself.
+    ///
+    /// Define Z(k) as the number of positive integers, n, not exceeding k for which
+    /// the polynomial Pn has at least one integer root.
+    ///
+    /// It can be verified that Z(100000) is 14696.
+    ///
+    /// What is Z(10^16)?
+    /// </summary>
+    internal class Problem269 : Problem
+    {
+        private static int length = 16;
+
+        /// <summary>
+        /// class for remember equation value when x=-9,...,0
+        /// </summary>
+        private class Polynomial : IEquatable<Polynomial>
+        {
+            public Dictionary<int, int> Values;
+            public string Key;
+
+            public Polynomial(Dictionary<int, int> values)
+            {
+                Values = values;
+                Key = string.Join("|", values.OrderBy(it => it.Key).Select(it => it.Key + "," + it.Value));
+            }
+
+            public Polynomial AppendDigit(int d)
+            {
+                var ret = new Dictionary<int, int>();
+                int tmp;
+
+                foreach (var pair in Values)
+                {
+                    /**
+                     * It is sufficient to ignore x,p(x) pair where |p(x)|>=9 (except for digits 0,1)
+                     * because appending digits can never get the polynomial to zero.
+                     */
+                    tmp = pair.Key * pair.Value + d;
+                    if (pair.Key <= -2 && Math.Abs(pair.Value) >= 9)
+                        continue;
+                    ret.Add(pair.Key, tmp);
+                }
+
+                return new Polynomial(ret);
+            }
+
+            public bool HasRoot()
+            {
+                return Values.Values.Any(it => it == 0);
+            }
+
+            public override string ToString()
+            {
+                return Key;
+            }
+
+            public bool Equals(Polynomial other)
+            {
+                bool ret = (Key == other.Key);
+
+                return ret;
+            }
+
+            public override int GetHashCode()
+            {
+                return Key.GetHashCode();
+            }
+        }
+
+        public Problem269() : base(269) { }
+
+        private Dictionary<Polynomial, long> AppendDigit(Dictionary<Polynomial, long> dict)
+        {
+            var ret = new Dictionary<Polynomial, long>();
+
+            foreach (var pair in dict)
+            {
+                for (int d = 0; d < 10; d++)
+                {
+                    var poly = pair.Key.AppendDigit(d);
+
+                    if (ret.ContainsKey(poly))
+                        ret[poly] += pair.Value;
+                    else
+                        ret.Add(poly, pair.Value);
+                }
+            }
+
+            return ret;
+        }
+
+        protected override string Action()
+        {
+            var dict = new Dictionary<Polynomial, long>();
+            long counter = 0;
+
+            /**
+             * http://en.wikipedia.org/wiki/Rational_root_theorem
+             * The integer root must be a minus divisor of the last digit.
+             * Also number ending with 0 have integer root of 0.
+             * So root must be from 0 to -9
+             */
+            // Create polynomial for const value 0
+            var tmp = new Dictionary<int, int>();
+            for (int i = -9; i <= 0; i++)
+                tmp.Add(i, 0);
+            dict.Add(new Polynomial(tmp), 1);
+            for (int i = 0; i < length; i++)
+                dict = AppendDigit(dict);
+
+            foreach (var pair in dict)
+            {
+                if (pair.Key.HasRoot())
+                    counter += pair.Value;
+            }
+
+            return counter.ToString();
         }
     }
 }

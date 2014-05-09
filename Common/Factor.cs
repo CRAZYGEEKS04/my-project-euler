@@ -86,6 +86,16 @@ namespace ProjectEuler.Common
             return a;
         }
 
+        public static long GetCommonMultiple(int a, int b)
+        {
+            return a * b / GetCommonFactor(a, b);
+        }
+
+        public static long GetCommonMultiple(long a, long b)
+        {
+            return a * b / GetCommonFactor(a, b);
+        }
+
         public static BigInteger GetCommonFactor(BigInteger a, BigInteger b)
         {
             BigInteger tmp;
