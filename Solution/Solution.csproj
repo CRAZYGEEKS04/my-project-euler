@@ -69,6 +69,7 @@
     <Compile Include="2\40.cs" />
     <Compile Include="2\50.cs" />
     <Compile Include="2\60.cs" />
+    <Compile Include="2\70.cs" />
     <Compile Include="Problem.cs" />
     <Compile Include="ProblemSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
