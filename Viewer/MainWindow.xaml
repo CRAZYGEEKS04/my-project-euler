@@ -1,39 +1,40 @@
 ﻿<Window x:Class="ProjectEuler.Viewer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Project Euler Viewer" Height="480" Width="640"
+        Title="Project Euler Viewer" Width="1024" Height="640"
         Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="5*" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="60" />
         </Grid.RowDefinitions>
         <Grid Grid.Column="0" Grid.Row="0">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
             <ListBox Grid.Column="0" Grid.Row="0"
                       Name="viewProblem" Margin="10" SelectionChanged="viewProblem_SelectionChanged" />
             <Grid Grid.Column="1" Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="120" />
+                    <ColumnDefinition Width="160" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="6*" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
                 </Grid.RowDefinitions>
-                <TextBox Grid.ColumnSpan="3" Name="textQuestion" Margin="10" TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Visible" FontFamily="Consolas" />
+                <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="10" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionTextBrushKey}}">
+                    <WebBrowser Name="textQuestion" Margin="2" />
+                </Border>
                 <Label Grid.Column="0" Grid.Row="1"
                        Content="Answer :" VerticalAlignment="Center" Margin="10,0,0,0" />
                 <Label Grid.Column="0" Grid.Row="2"
                        Content="Time Cost :" VerticalAlignment="Center" Margin="10,0,0,0" />
                 <TextBox Grid.Column="1" Grid.Row="1"
-                         Name="textAnswer" VerticalAlignment="Center" TextAlignment="Right" />
+                         Name="textAnswer" VerticalAlignment="Center" TextAlignment="Left" />
                 <TextBox Grid.Column="1" Grid.Row="2"
                          Name="textTimeCost" VerticalAlignment="Center" TextAlignment="Right" />
                 <Label Grid.Column="2" Grid.Row="1"

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProjectEuler.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ProjectEuler.Common;
 
 namespace ProjectEuler.Solution
 {

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using ProjectEuler.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using ProjectEuler.Common;
-using ProjectEuler.Common.Miscellany;
 
 namespace ProjectEuler.Solution
 {
@@ -255,11 +253,6 @@ namespace ProjectEuler.Solution
     internal class Problem262 : Problem
     {
         public Problem262() : base(262) { }
-
-        protected override string Action()
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>
@@ -348,11 +341,6 @@ namespace ProjectEuler.Solution
     internal class Problem264 : Problem
     {
         public Problem264() : base(264) { }
-
-        protected override string Action()
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>

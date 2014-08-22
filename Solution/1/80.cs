@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ProjectEuler.Common;
+﻿using ProjectEuler.Common;
 using ProjectEuler.Common.GLPK;
 using ProjectEuler.Common.Graph;
 using ProjectEuler.Common.Miscellany;
 using ProjectEuler.Common.Partition;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace ProjectEuler.Solution
 {

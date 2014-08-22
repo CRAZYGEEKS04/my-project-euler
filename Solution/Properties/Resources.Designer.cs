@@ -593,15 +593,5 @@ namespace ProjectEuler.Solution.Properties {
                 return ResourceManager.GetString("D0107", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Questions {
-            get {
-                object obj = ResourceManager.GetObject("Questions", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

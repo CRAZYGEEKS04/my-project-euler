@@ -1,10 +1,10 @@
-﻿using System;
+﻿using ProjectEuler.Common;
+using ProjectEuler.Common.Miscellany;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using ProjectEuler.Common;
-using ProjectEuler.Common.Miscellany;
 
 namespace ProjectEuler.Solution
 {
@@ -435,14 +435,6 @@ namespace ProjectEuler.Solution
     internal class Problem255 : Problem
     {
         public Problem255() : base(255) { }
-
-        protected override string Action()
-        {
-            /**
-             * n is 14-digit number, so x(0) = 7*10^6
-             */
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>
@@ -542,11 +534,6 @@ namespace ProjectEuler.Solution
     internal class Problem257 : Problem
     {
         public Problem257() : base(257) { }
-
-        protected override string Action()
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using ProjectEuler.Common;
+using ProjectEuler.Common.Miscellany;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using ProjectEuler.Common;
-using ProjectEuler.Common.Miscellany;
 
 namespace ProjectEuler.Solution
 {

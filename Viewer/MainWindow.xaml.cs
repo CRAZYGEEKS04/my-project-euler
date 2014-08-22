@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using ProjectEuler.Solution;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using ProjectEuler.Solution;
 
 namespace ProjectEuler.Viewer
 {
@@ -23,7 +23,6 @@ namespace ProjectEuler.Viewer
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            textQuestion.IsReadOnly = true;
             textAnswer.IsReadOnly = true;
             textTimeCost.IsReadOnly = true;
             buttonCalc.IsEnabled = false;
@@ -57,14 +56,13 @@ namespace ProjectEuler.Viewer
 
         private void SetContent(Problem p)
         {
-            textQuestion.Text = string.Format("{0}\n\n{1}", p.ToString(), p.Question);
+            textQuestion.Navigate(p.QuestionUrl);
             if (p.Answer != null)
             {
                 labelCorrect.Content = p.IsCorrect ? "Correct" : "Error";
                 labelCorrect.Foreground = p.IsCorrect ? Brushes.Blue : Brushes.Red;
                 textAnswer.Text = p.Answer;
-                textTimeCost.Text = string.Format("{0}.{1:0000000}",
-                    p.Ticks / 10000000, p.Ticks % 10000000);
+                textTimeCost.Text = string.Format("{0}.{1:0000000}", p.Ticks / 10000000, p.Ticks % 10000000);
             }
             else
             {
