@@ -1,18 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{832A4AB7-12BA-4846-B007-5C4401E3BCC6}</ProjectGuid>
+    <ProjectGuid>{7CD9F0AE-B95B-411E-816C-295DC2EE85F5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ProjectEuler.Solution</RootNamespace>
     <AssemblyName>Solution</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -69,7 +67,6 @@
     <Compile Include="2\40.cs" />
     <Compile Include="2\50.cs" />
     <Compile Include="2\60.cs" />
-    <Compile Include="2\70.cs" />
     <Compile Include="Problem.cs" />
     <Compile Include="ProblemSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -80,42 +77,42 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Answers.txt" />
+    <Content Include="Resources\D0008.txt" />
+    <Content Include="Resources\D0011.txt" />
+    <Content Include="Resources\D0013.txt" />
+    <Content Include="Resources\D0018.txt" />
+    <Content Include="Resources\D0022.txt" />
+    <Content Include="Resources\D0042.txt" />
+    <Content Include="Resources\D0054.txt" />
+    <Content Include="Resources\D0059.txt" />
+    <Content Include="Resources\D0067.txt" />
+    <Content Include="Resources\D0079.txt" />
+    <Content Include="Resources\D0081.txt" />
+    <Content Include="Resources\D0082.txt" />
+    <Content Include="Resources\D0083.txt" />
+    <Content Include="Resources\D0089.txt" />
+    <Content Include="Resources\D0096.txt" />
+    <Content Include="Resources\D0098.txt" />
+    <Content Include="Resources\D0099.txt" />
+    <Content Include="Resources\D0102.txt" />
+    <Content Include="Resources\D0105.txt" />
+    <Content Include="Resources\D0107.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{d6b3f218-0c69-4bdf-bc4b-062292ca2bc4}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Answers.txt" />
-    <None Include="Resources\D0089.txt" />
-    <None Include="Resources\D0083.txt" />
-    <None Include="Resources\D0082.txt" />
-    <None Include="Resources\D0081.txt" />
-    <None Include="Resources\D0079.txt" />
-    <None Include="Resources\D0067.txt" />
-    <None Include="Resources\D0059.txt" />
-    <None Include="Resources\D0054.txt" />
-    <None Include="Resources\D0042.txt" />
-    <None Include="Resources\D0022.txt" />
-    <None Include="Resources\D0018.txt" />
-    <None Include="Resources\D0013.txt" />
-    <None Include="Resources\D0011.txt" />
-    <None Include="Resources\D0008.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\D0096.txt" />
-    <None Include="Resources\D0098.txt" />
-    <None Include="Resources\D0099.txt" />
-    <None Include="Resources\D0102.txt" />
-    <None Include="Resources\D0105.txt" />
-    <None Include="Resources\D0107.txt" />
     <None Include="Resources\Questions" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{2E2E8600-8FFB-4028-A026-F7D4E127026F}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

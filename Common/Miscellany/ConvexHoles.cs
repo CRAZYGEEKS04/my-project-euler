@@ -106,7 +106,7 @@ namespace ProjectEuler.Common.Miscellany
 
         private void Recur(int t1, int t2, int min, long s)
         {
-            int i, j;
+            int i;
             long s_orig = s;
             long s_tmp;
             int t3;
