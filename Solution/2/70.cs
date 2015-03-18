@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace ProjectEuler.Solution
@@ -26,7 +27,10 @@ namespace ProjectEuler.Solution
         private const int size = 30;
         private static Modulo m = new Modulo(Misc.Pow(10, 8));
 
-        public Problem270() : base(270) { }
+        public Problem270()
+            : base(270)
+        {
+        }
 
         private long Calculate(Dictionary<string, long> dict, List<int> polygon)
         {
@@ -153,6 +157,155 @@ namespace ProjectEuler.Solution
             dict.Add("0,0,0", 1);
 
             return Calculate(dict, poly).ToString();
+        }
+    }
+
+    /// <summary>
+    /// For a positive number n, define S(n) as the sum of the integers x, for which
+    /// 1 < x < n and x ^ 3 ≡ 1 mod n.
+    ///
+    /// When n = 91, there are 8 possible values for x, namely: 9, 16, 22, 29, 53, 74,
+    /// 79, 81.
+    /// Thus, S(91) = 9+16+22+29+53+74+79+81 = 363.
+    ///
+    /// Find S(13082761331670030).
+    /// </summary>
+    internal class Problem271 : Problem
+    {
+        private const long upper = 13082761331670030;
+
+        public Problem271()
+            : base(271)
+        {
+        }
+
+        protected override string Action()
+        {
+            /**
+             * x^3 = 1 mod n, x^3 = 1 mod every prime factor of n
+             * upper = 2*3*5*7*11*13*17*19*23*29*31*37*41*43
+             * a = x - 1
+             * a^3 + 3*a^2 + 3*a + 1 = 1 mod p
+             * a * (a^2 + 3a + 3) = 0 mod p,
+             * for p = 2:
+             */
+            BigInteger sum = 0;
+
+            for (BigInteger i = 1 + 153416670; i < upper; i += 153416670)
+            {
+                if (i * i * i % upper == 1)
+                    sum += i;
+            }
+
+            return sum.ToString();
+        }
+    }
+
+    internal class Problem272 : Problem
+    {
+        public Problem272()
+            : base(272)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Consider equations of the form: a^2 + b^2 = N, 0 ≤ a ≤ b, a, b and N integer.
+    ///
+    /// For N=65 there are two solutions:
+    ///
+    /// a=1, b=8 and a=4, b=7.
+    ///
+    /// We call S(N) the sum of the values of a of all solutions of a^2 + b^2 = N,
+    /// 0 ≤ a ≤ b, a, b and N integer.
+    ///
+    /// Thus S(65) = 1 + 4 = 5.
+    ///
+    /// Find ∑S(N), for all squarefree N only divisible by primes of the form 4k+1
+    /// with 4k+1 < 150.
+    /// </summary>
+    internal class Problem273 : Problem
+    {
+        private static int upper = 150;
+
+        public Problem273()
+            : base(273)
+        {
+        }
+
+        private void GenerateList(List<long> a, List<long> b)
+        {
+            var p = new Prime(upper);
+            List<int> nums;
+            int idx;
+
+            p.GenerateAll();
+            nums = p.Nums.Where(it => it % 4 == 1).ToList();
+            a.AddRange(nums.Select(it => 0L));
+            b.AddRange(nums.Select(it => 0L));
+            for (int i = 1; i < Misc.Sqrt(upper) + 1; i++)
+            {
+                for (int j = i + 1; j < Misc.Sqrt(upper) + 1; j++)
+                {
+                    idx = nums.IndexOf(i * i + j * j);
+
+                    if (idx < 0)
+                        continue;
+                    nums[idx] = 0;
+                    a[idx] = i;
+                    b[idx] = j;
+                }
+            }
+        }
+
+        private long Calculate(List<long> a, List<long> b, int id, List<long> c, List<long> d)
+        {
+            long sum = c.Sum();
+
+            if (id >= a.Count - 1)
+                return sum;
+
+            for (int i = id + 1; i < a.Count; i++)
+            {
+                List<long> nc = new List<long>(), nd = new List<long>();
+                long tmpa, tmpb;
+
+                for (int j = 0; j < c.Count; j++)
+                {
+                    tmpa = Math.Abs(a[i] * c[j] - b[i] * d[j]);
+                    tmpb = a[i] * d[j] + b[i] * c[j];
+                    nc.Add(Math.Min(tmpa, tmpb));
+                    nd.Add(Math.Max(tmpa, tmpb));
+                    tmpa = a[i] * c[j] + b[i] * d[j];
+                    tmpb = Math.Abs(a[i] * d[j] - b[i] * c[j]);
+                    nc.Add(Math.Min(tmpa, tmpb));
+                    nd.Add(Math.Max(tmpa, tmpb));
+                }
+                sum += Calculate(a, b, i, nc, nd);
+            }
+
+            return sum;
+        }
+
+        protected override string Action()
+        {
+            /**
+             * every prime number modulo 4 equals 1 can be expressed by sum of two squares.
+             * http://en.wikipedia.org/wiki/Brahmagupta–Fibonacci_identity
+             */
+            List<long> a = new List<long>(), b = new List<long>(), c, d;
+            long sum = 0;
+
+            GenerateList(a, b);
+
+            for (int i = 0; i < a.Count; i++)
+            {
+                c = new List<long>() { a[i] };
+                d = new List<long>() { b[i] };
+                sum += Calculate(a, b, i, c, d);
+            }
+
+            return sum.ToString();
         }
     }
 }
