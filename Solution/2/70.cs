@@ -226,7 +226,7 @@ namespace ProjectEuler.Solution
     /// </summary>
     internal class Problem273 : Problem
     {
-        private static int upper = 150;
+        private const int upper = 150;
 
         public Problem273()
             : base(273)
@@ -304,6 +304,68 @@ namespace ProjectEuler.Solution
                 d = new List<long>() { b[i] };
                 sum += Calculate(a, b, i, c, d);
             }
+
+            return sum.ToString();
+        }
+    }
+
+    /// <summary>
+    /// For each integer p > 1 coprime to 10 there is a positive divisibility multiplier
+    /// m < p which preserves divisibility by p for the following function on any
+    /// positive integer, n:
+    ///
+    /// f(n) = (all but the last digit of n) + (the last digit of n) * m
+    ///
+    /// That is, if m is the divisibility multiplier for p, then f(n) is divisible by p
+    /// if and only if n is divisible by p.
+    ///
+    /// (When n is much larger than p, f(n) will be less than n and repeated application
+    /// of f provides a multiplicative divisibility test for p.)
+    ///
+    /// For example, the divisibility multiplier for 113 is 34.
+    ///
+    /// f(76275) = 7627 + 5 * 34 = 7797 : 76275 and 7797 are both divisible by 113
+    /// f(12345) = 1234 + 5 * 34 = 1404 : 12345 and 1404 are both not divisible by 113
+    ///
+    /// The sum of the divisibility multipliers for the primes that are coprime to 10
+    /// and less than 1000 is 39517. What is the sum of the divisibility multipliers
+    /// for the primes that are coprime to 10 and less than 10^7?
+    /// </summary>
+    internal class Problem274 : Problem
+    {
+        private const int upper = 10000000;
+
+        public Problem274()
+            : base(274)
+        {
+        }
+
+        private int CalculateM(int p)
+        {
+            int n = p - p / 10, d = p % 10;
+            HashSet<int> m = new HashSet<int>();
+
+            for (int i = 0; n / d < p; i++)
+            {
+                if (n % d == 0 && n != d)
+                    m.Add(n / d);
+                n += p;
+            }
+
+            if (m.Count != 1)
+                throw new ArgumentException();
+
+            return m.First();
+        }
+
+        protected override string Action()
+        {
+            var p = new Prime(upper);
+            long sum = 1 + 5; // for p = 3 and 7
+
+            p.GenerateAll();
+            foreach (var prime in p.Nums.Skip(4))
+                sum += CalculateM(prime);
 
             return sum.ToString();
         }
